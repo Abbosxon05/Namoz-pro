@@ -1,0 +1,16 @@
+{
+  "name": "namoz-pro",
+  "version": "6.0.0",
+  "description": "Namoz Pro - Namoz vaqtlari, qibla, zikr va duo ilovasi",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo Build complete"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/android": "^8.0.0"
+  }
+}

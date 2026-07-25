@@ -1,0 +1,49 @@
+name: Build Namoz Pro APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout kodi
+      uses: actions/checkout@v4
+
+    - name: Java o'rnatish (JDK 17)
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Node.js o'rnatish
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Android SDK o'rnatish
+      uses: android-actions/setup-android@v3
+
+    - name: NPM paketlarini o'rnatish
+      run: npm install
+
+    - name: Android platformasini sinxronlash
+      run: npx cap sync android
+
+    - name: Gradle wrapper ruxsatini berish
+      run: chmod +x android/gradlew
+
+    - name: Debug APK yaratish
+      run: |
+        cd android
+        ./gradlew assembleDebug
+
+    - name: APK ni artifact sifatida saqlash
+      uses: actions/upload-artifact@v4
+      with:
+        name: namoz-pro-apk
+        path: android/app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30

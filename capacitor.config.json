@@ -1,0 +1,11 @@
+{
+  "appId": "uz.namozpro.app",
+  "appName": "Namoz Pro",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "minWebViewVersion": 60
+  }
+}

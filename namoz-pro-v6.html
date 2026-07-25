@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Namoz Pro">
+<meta name="theme-color" content="#07090f">
+<meta name="description" content="Namoz vaqtlari, qaza, zikr, duo, qibla va statistika uchun offline-friendly Namoz Pro ilovasi.">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Namoz Pro","short_name":"NamozPro","start_url":".","display":"standalone","background_color":"#07090f","theme_color":"#07090f","lang":"uz"}'>
+<title>Namoz Pro v6</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* === SKELETON LOADING === */
+.skeleton{background:linear-gradient(90deg,var(--s2) 25%,var(--b1) 50%,var(--s2) 75%);background-size:200% 100%;animation:skeletonPulse 1.4s ease-in-out infinite;border-radius:8px;}
+@keyframes skeletonPulse{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.skel-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.skel-icon{width:44px;height:44px;border-radius:12px;flex-shrink:0;}
+.skel-info{flex:1;}
+.skel-name{height:16px;width:60%;margin-bottom:8px;}
+.skel-time{height:12px;width:35%;}
+.skel-chk{width:34px;height:34px;border-radius:9px;flex-shrink:0;}
+/* === PULL TO REFRESH === */
+.ptr-indicator{position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:36px;height:36px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;transition:top .3s;box-shadow:0 4px 12px #4f8ef740;}
+.ptr-indicator.visible{top:8px;}
+/* === GLASSMORPHISM CARDS === */
+.glass-card{background:rgba(14,19,32,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);}
+/* === BAYRAMLAR (Islamic Holidays) === */
+.bayram-countdown{background:linear-gradient(135deg,#1a0a2e,#0d1f45);border:1px solid #7c5cbf40;border-radius:var(--r);padding:16px;text-align:center;position:relative;overflow:hidden;}
+.bayram-countdown::before{content:'☪';position:absolute;font-size:80px;right:-10px;top:-10px;opacity:.06;}
+.bayram-name{font-size:18px;font-weight:800;color:var(--gold);letter-spacing:-0.5px;margin-bottom:4px;}
+.bayram-date{font-size:12px;color:var(--t3);margin-bottom:14px;}
+.bayram-timer{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.btimer-box{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 4px;}
+.btimer-num{font-size:24px;font-weight:800;color:var(--acc);letter-spacing:-1px;line-height:1;}
+.btimer-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+.bayram-list{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;}
+.bayram-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--b1);}
+.bayram-item:last-child{border-bottom:none;}
+.bayram-item-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0;}
+.bayram-item-info{flex:1;}
+.bayram-item-name{font-size:14px;font-weight:600;}
+.bayram-item-date{font-size:11px;color:var(--t3);margin-top:2px;}
+.bayram-item-days{font-size:13px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;}
+.bayram-item-days.soon{background:#d4a84320;color:var(--gold);}
+.bayram-item-days.today{background:#22c55e20;color:var(--done);}
+.bayram-item-days.past{color:var(--t4);font-size:11px;}
+/* === IMPROVED ANIMATIONS === */
+.ncard{transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,border-color .3s;}
+.ncard:active{transform:scale(.96);}
+.ncard.done{animation:cardDone .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes cardDone{0%{transform:scale(1);}50%{transform:scale(1.03);}100%{transform:scale(1);}}
+.tasbeh-btn{transition:transform .1s cubic-bezier(.34,1.56,.64,1),box-shadow .15s;}
+.tasbeh-btn:active{transform:scale(.9);box-shadow:0 2px 8px #4f8ef720;}
+.tab-item{transition:all .2s cubic-bezier(.34,1.56,.64,1);}
+.tab-item.active .tab-icon{transform:scale(1.15);}
+.tab-icon{transition:transform .2s cubic-bezier(.34,1.56,.64,1);display:block;}
+/* === PROGRESS RING ANIMATION === */
+#ringC{transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1),stroke .3s;}
+/* === HOVER GLOW === */
+.ncard:hover{box-shadow:0 4px 20px rgba(79,142,247,.12);}
+.ncard.done:hover{box-shadow:0 4px 20px rgba(34,197,94,.15);}
+.ncard.missed:hover{box-shadow:0 4px 20px rgba(239,68,68,.1);}
+/* === AI LOADING IMPROVED === */
+@keyframes aidot{0%,80%,100%{transform:scale(.7) translateY(0);opacity:.4;}40%{transform:scale(1.1) translateY(-3px);opacity:1;}}
+/* === BADGE PULSE === */
+.vaqt-cur-badge{animation:badgePulse 1.5s ease-in-out infinite;}
+@keyframes badgePulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+/* === LIGHT THEME FIXES === */
+body[data-theme="light"] .bayram-countdown{background:linear-gradient(135deg,#ede9fe,#dbeafe);}
+body[data-theme="light"] .glass-card{background:rgba(255,255,255,.8);}
+body[data-theme="blue"]{--acc:#4f8ef7;--acc2:#7c5cbf;--grad1:#0d1f45;--grad2:#150d35;}
+body[data-theme="green"]{--acc:#22c55e;--acc2:#16a34a;--grad1:#0a2018;--grad2:#0d2510;}
+body[data-theme="gold"]{--acc:#d4a843;--acc2:#b8860b;--grad1:#1a1208;--grad2:#2a1a00;}
+body[data-theme="light"]{--bg:#f6f8fb;--s1:#ffffff;--s2:#edf2f7;--b1:#d8e2ef;--b2:#c6d3e1;--acc:#2563eb;--acc2:#16a34a;--gold:#b7791f;--t1:#102033;--t2:#475569;--t3:#64748b;--t4:#94a3b8;--grad1:#dbeafe;--grad2:#f0fdf4;}
+body[data-font="large"]{font-size:17px;}
+body[data-font="large"] .ncard-name,body[data-font="large"] .settings-name,body[data-font="large"] .vaqt-name{font-size:17px;}
+body[data-font="large"] .ncard-time,body[data-font="large"] .settings-sub,body[data-font="large"] .notif-sub{font-size:13px;}
+body[data-font="xlarge"]{font-size:18px;}
+body[data-font="xlarge"] .ncard-name,body[data-font="xlarge"] .settings-name,body[data-font="xlarge"] .vaqt-name{font-size:18px;}
+body[data-font="xlarge"] .ncard-time,body[data-font="xlarge"] .settings-sub,body[data-font="xlarge"] .notif-sub{font-size:14px;}
+:root{
+  --bg:#07090f;--s1:#0e1320;--s2:#141c2e;--b1:#1e2d45;--b2:#243550;
+  --acc:#4f8ef7;--acc2:#7c5cbf;--gold:#d4a843;
+  --done:#22c55e;--miss:#ef4444;
+  --t1:#eef2f8;--t2:#8fa3be;--t3:#4a6080;--t4:#2a3f5a;
+  --grad1:#0d1f45;--grad2:#150d35;--r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);display:flex;flex-direction:column;}
+.sky-bg{position:fixed;inset:0;z-index:0;pointer-events:none;transition:background 3s;}
+.pages,.tab-bar{position:relative;z-index:1;}
+.tab-bar{display:flex;background:rgba(14,19,32,.96);backdrop-filter:blur(20px);border-top:1px solid var(--b1);padding:8px 0 max(8px,env(safe-area-inset-bottom));flex-shrink:0;order:2;}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;}
+.tab-icon{font-size:20px;line-height:1;}
+.tab-label{font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--t3);}
+.tab-item.active .tab-label{color:var(--acc);}
+.pages{flex:1;overflow:hidden;order:1;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch;}
+.page.active{display:block;}
+.hdr{background:linear-gradient(160deg,var(--grad1)ee 0%,var(--grad2)ee 100%);backdrop-filter:blur(20px);padding:52px 20px 18px;text-align:center;border-bottom:1px solid var(--b1);}
+.hdr-eyebrow{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.hdr-date{font-size:24px;font-weight:800;letter-spacing:-1px;}
+.hdr-hijri{font-size:12px;color:var(--t3);margin-top:2px;}
+.juma-badge{display:inline-block;background:linear-gradient(135deg,#d4a843,#b8860b);color:#000;font-size:11px;font-weight:800;padding:3px 12px;border-radius:20px;margin-top:6px;}
+.countdown-bar{background:rgba(14,19,32,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--b1);padding:10px 20px;display:flex;justify-content:space-between;align-items:center;}
+.cd-left{font-size:11px;color:var(--t3);}
+.cd-name{font-size:13px;font-weight:700;color:var(--acc);}
+.cd-time{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;}
+.nav{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(14,19,32,.9);border-bottom:1px solid var(--b1);}
+.nav-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--b1);background:var(--s2);color:var(--t1);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.nav-btn:active{background:var(--b1);}
+.nav-mid{flex:1;text-align:center;}
+.nav-wd{font-size:10px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;}
+.nav-fd{font-size:15px;font-weight:700;}
+.nav-today{background:var(--acc);border:none;border-radius:8px;color:#fff;font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;flex-shrink:0;}
+.profile-bar{display:flex;gap:8px;padding:10px 16px;background:rgba(14,19,32,.9);border-bottom:1px solid var(--b1);overflow-x:auto;}
+.profile-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;border:1px solid var(--b1);background:var(--s2);cursor:pointer;white-space:nowrap;flex-shrink:0;font-size:13px;font-weight:500;color:var(--t2);}
+.profile-btn.active{background:var(--acc);border-color:var(--acc);color:#fff;}
+.sec{padding:14px 14px 0;}
+.sec-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:10px;}
+.namoz-list{display:flex;flex-direction:column;gap:8px;}
+.ncard{background:var(--s1);border:1px solid var(--b1);border-radius:14px;display:flex;align-items:center;padding:14px;gap:12px;cursor:pointer;transition:transform .1s;position:relative;overflow:hidden;}
+.ncard:active{transform:scale(.97);}
+.ncard.done{border-color:#22c55e35;background:linear-gradient(135deg,#0d2016,#0e1320);}
+.ncard.missed{border-color:#ef444430;background:linear-gradient(135deg,#1f0c0c,#0e1320);}
+.ncard-bar{position:absolute;left:0;top:0;bottom:0;width:3px;}
+.ncard.done .ncard-bar{background:var(--done);}
+.ncard.missed .ncard-bar{background:var(--miss);}
+.ncard-icon{width:44px;height:44px;border-radius:12px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;}
+.ncard.done .ncard-icon{background:#22c55e18;}
+.ncard.missed .ncard-icon{background:#ef444418;}
+.ncard-info{flex:1;}
+.ncard-name{font-size:16px;font-weight:600;}
+.ncard-time{font-size:12px;color:var(--t3);margin-top:2px;}
+.ncard-chk-ui{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;border:2px solid var(--b1);background:var(--s2);color:var(--t3);transition:all .2s;}
+.ncard.done .ncard-chk-ui{background:#22c55e;border-color:#22c55e;color:#fff;}
+.ncard.missed .ncard-chk-ui{background:#ef4444;border-color:#ef4444;color:#fff;}
+.ring-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:16px;padding:16px;}
+.ring-wrap{position:relative;width:76px;height:76px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.stat-box{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:14px;text-align:center;}
+.stat-box.green{border-color:#22c55e25;background:linear-gradient(135deg,#0a1f12,#0e1320);}
+.stat-box.red{border-color:#ef444425;background:linear-gradient(135deg,#1f0c0c,#0e1320);}
+.stat-box.gold{border-color:#d4a84325;background:linear-gradient(135deg,#1f1508,#0e1320);}
+.stat-num{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;}
+.stat-box.green .stat-num{color:var(--done);}
+.stat-box.red .stat-num{color:var(--miss);}
+.stat-box.gold .stat-num{color:var(--gold);}
+.stat-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-top:5px;}
+.week-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;}
+.week-row{display:flex;gap:4px;justify-content:space-between;}
+.wday{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.wday-lbl{font-size:9px;color:var(--t3);}
+.wday-num{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;background:var(--s2);color:var(--t2);border:1px solid transparent;}
+.wday.cur .wday-num{background:var(--acc);color:#fff;}
+.wday.all-done .wday-num{background:#22c55e25;color:var(--done);border-color:#22c55e35;}
+.wday.partial .wday-num{background:#d4a84320;color:var(--gold);border-color:#d4a84330;}
+.wday.all-miss .wday-num{background:#ef444420;color:var(--miss);border-color:#ef444430;}
+.wdots{display:flex;gap:2px;}
+.wdot{width:4px;height:4px;border-radius:50%;background:var(--b1);}
+.wdot.d{background:var(--done);}.wdot.m{background:var(--miss);}
+.reja-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px;}
+.reja-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+.reja-label{font-size:13px;color:var(--t2);flex:1;}
+.reja-num{font-size:20px;font-weight:800;color:var(--acc);min-width:36px;text-align:center;}
+.reja-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--b1);background:var(--s2);color:var(--t1);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.reja-prog{background:var(--s2);border-radius:10px;overflow:hidden;height:8px;margin-top:8px;}
+.reja-prog-bar{height:100%;background:var(--done);border-radius:10px;transition:width .4s;}
+.qaza-card{background:var(--s1);border:1px solid #ef444428;border-radius:var(--r);overflow:hidden;}
+.qaza-hdr{background:linear-gradient(135deg,#1f0c0c,#0e1320);padding:12px 16px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--miss);}
+.qaza-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--b1);}
+.qaza-badge{font-size:13px;font-weight:700;color:var(--miss);background:#ef444415;padding:3px 12px;border-radius:20px;}
+/* KUNLIK KARTA */
+.daily-card{background:linear-gradient(135deg,var(--grad1),var(--grad2));border:1px solid var(--b1);border-radius:var(--r);padding:16px;overflow:hidden;position:relative;}
+.daily-img{font-size:48px;position:absolute;right:16px;top:50%;transform:translateY(-50%);opacity:.3;}
+.daily-eyebrow{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.daily-text{font-size:14px;font-weight:500;line-height:1.6;color:var(--t1);max-width:240px;}
+.daily-src{font-size:11px;color:var(--t3);margin-top:6px;}
+/* STAT */
+.hisobot-card{background:linear-gradient(135deg,var(--grad1),var(--grad2));border:1px solid var(--b1);border-radius:var(--r);padding:20px;text-align:center;}
+.hisobot-pct{font-size:64px;font-weight:800;letter-spacing:-3px;line-height:1;}
+.hisobot-pct.excellent{color:var(--done);}.hisobot-pct.good{color:var(--acc);}.hisobot-pct.medium{color:var(--gold);}.hisobot-pct.low{color:var(--miss);}
+.hbox-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
+.hbox{background:#ffffff10;border-radius:12px;padding:12px;text-align:center;}
+.hbox-num{font-size:22px;font-weight:800;}
+.hbox-lbl{font-size:10px;color:var(--t3);margin-top:3px;}
+.streak-card{background:linear-gradient(135deg,#1a1040,#0d1f45);border:1px solid #4f8ef730;border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;}
+.challenge-card{background:linear-gradient(135deg,#0d1f45,#150d35);border:1px solid #7c5cbf40;border-radius:var(--r);padding:16px;}
+.ch-days{display:flex;gap:3px;margin-top:10px;flex-wrap:wrap;}
+.ch-day{width:28px;height:28px;border-radius:8px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--t3);}
+.ch-day.win{background:#22c55e25;color:var(--done);}.ch-day.fail{background:#ef444420;color:var(--miss);}.ch-day.tod{border:1px solid var(--acc);}
+/* Haftalik taqqoslash */
+.compare-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;}
+.compare-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.compare-lbl{font-size:12px;color:var(--t2);width:80px;flex-shrink:0;}
+.compare-bar-wrap{flex:1;height:8px;background:var(--s2);border-radius:4px;overflow:hidden;}
+.compare-bar{height:100%;border-radius:4px;transition:width .5s;}
+.compare-val{font-size:12px;font-weight:700;width:30px;text-align:right;flex-shrink:0;}
+.chart-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:8px;}
+.cbar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.cbar{width:100%;border-radius:4px 4px 0 0;min-height:4px;}
+.cbar-lbl{font-size:9px;color:var(--t3);}.cbar-val{font-size:9px;color:var(--t2);font-weight:600;}
+.miss-stat{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;}
+.miss-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b1);}
+.miss-row:last-child{border-bottom:none;}
+.miss-bar-wrap{height:5px;background:var(--s2);border-radius:3px;margin-top:4px;overflow:hidden;}
+.miss-bar{height:100%;border-radius:3px;background:var(--miss);}
+.heatmap-wrap{overflow-x:auto;padding-bottom:4px;}
+.heatmap{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;gap:3px;width:max-content;}
+.hm-cell{width:12px;height:12px;border-radius:3px;background:var(--s2);}
+.hm-cell.l1{background:#0a2018;}.hm-cell.l2{background:#15552a;}.hm-cell.l3{background:#1a7a3a;}.hm-cell.l4{background:#22c55e;}.hm-cell.miss{background:#3a1515;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-head{font-size:9px;color:var(--t3);text-align:center;padding:4px 0;}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:12px;font-weight:500;color:var(--t2);background:var(--s2);border:1px solid transparent;gap:2px;}
+.cal-day.empty{background:transparent;border:none;cursor:default;}
+.cal-day.today{border-color:var(--acc);color:var(--acc);}.cal-day.cur{background:var(--acc);color:#fff;}
+.cal-day.all-done{background:#22c55e20;color:var(--done);border-color:#22c55e30;}
+.cal-day.partial{background:#d4a84318;color:var(--gold);border-color:#d4a84325;}
+.cal-day.all-miss{background:#ef444418;color:var(--miss);border-color:#ef444428;}
+.cal-dot{width:4px;height:4px;border-radius:50%;}
+.cal-day.all-done .cal-dot{background:var(--done);}.cal-day.partial .cal-dot{background:var(--gold);}.cal-day.all-miss .cal-dot{background:var(--miss);}
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ach-item{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:12px;text-align:center;position:relative;}
+.ach-item.earned{border-color:var(--gold);background:linear-gradient(135deg,#1a1208,#0e1320);}
+.ach-item.earned::after{content:'✓';position:absolute;top:6px;right:8px;font-size:10px;font-weight:800;color:var(--gold);}
+.ach-icon{font-size:28px;line-height:1;margin-bottom:6px;}
+.ach-name{font-size:10px;font-weight:600;color:var(--t2);line-height:1.3;}
+.ach-item:not(.earned){opacity:.4;}
+/* TASBEH */
+.tasbeh-wrap{text-align:center;}
+.tasbeh-count{font-size:80px;font-weight:800;letter-spacing:-4px;line-height:1;transition:transform .08s;}
+.tasbeh-count.pulse{transform:scale(1.06);}
+.tasbeh-btn{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;color:#fff;font-size:36px;cursor:pointer;box-shadow:0 8px 32px #4f8ef740;margin:16px auto;display:flex;align-items:center;justify-content:center;transition:transform .1s;-webkit-user-select:none;user-select:none;}
+.tasbeh-btn:active{transform:scale(.93);}
+.tasbeh-sel{display:flex;gap:6px;overflow-x:auto;padding:4px 0;margin-bottom:12px;}
+.tasbeh-sel-btn{padding:8px 16px;border-radius:50px;border:1px solid var(--b1);background:var(--s2);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.tasbeh-sel-btn.active{background:var(--acc);border-color:var(--acc);color:#fff;}
+.tasbeh-prog{height:6px;background:var(--b1);border-radius:3px;margin-top:12px;overflow:hidden;}
+.tasbeh-prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .3s;}
+.tasbeh-ctrls{display:flex;gap:8px;justify-content:center;margin-top:10px;}
+.tasbeh-ctrl{background:var(--s2);border:1px solid var(--b1);border-radius:12px;color:var(--t2);font-size:13px;font-weight:600;padding:10px 20px;cursor:pointer;}
+/* DUO */
+.search-bar{display:flex;gap:8px;margin-bottom:10px;}
+.search-input{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:12px;color:var(--t1);font-size:15px;padding:11px 16px;outline:none;font-family:'Inter',sans-serif;}
+.cat-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0;margin-bottom:10px;}
+.cat-tab{padding:6px 14px;border-radius:50px;border:1px solid var(--b1);background:var(--s2);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.cat-tab.active{background:var(--acc);border-color:var(--acc);color:#fff;}
+.duo-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;}
+.duo-item{border-bottom:1px solid var(--b1);}
+.duo-item:last-child{border-bottom:none;}
+.duo-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;}
+.duo-icon{font-size:20px;width:28px;flex-shrink:0;}
+.duo-name{font-size:14px;font-weight:600;flex:1;}
+.duo-cat-badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--acc);background:#4f8ef715;padding:2px 7px;border-radius:20px;flex-shrink:0;}
+.duo-arr{font-size:12px;color:var(--t3);transition:transform .2s;margin-left:4px;}
+.duo-item.expanded .duo-arr{transform:rotate(90deg);}
+.duo-body{display:none;padding:0 16px 14px;}
+.duo-item.expanded .duo-body{display:block;}
+.duo-arabic{font-size:18px;color:var(--gold);text-align:right;line-height:1.8;direction:rtl;margin-bottom:8px;padding:10px;background:var(--s2);border-radius:10px;}
+.duo-uz{font-size:13px;color:var(--t2);line-height:1.6;}
+.duo-source{font-size:11px;color:var(--t3);margin-top:6px;}
+/* AI DUO */
+.ai-duo-card{background:linear-gradient(135deg,#0d1f45,#150d35);border:1px solid #7c5cbf40;border-radius:var(--r);padding:16px;}
+.ai-input-row{display:flex;gap:8px;margin-bottom:12px;}
+.ai-input{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:12px;color:var(--t1);font-size:14px;padding:11px 14px;outline:none;font-family:'Inter',sans-serif;}
+.ai-btn{background:var(--acc);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:700;padding:0 16px;cursor:pointer;flex-shrink:0;}
+.ai-result{background:var(--s2);border-radius:12px;padding:14px;min-height:60px;}
+.ai-result-arabic{font-size:18px;color:var(--gold);text-align:right;direction:rtl;line-height:1.8;margin-bottom:8px;}
+.ai-result-text{font-size:13px;color:var(--t1);line-height:1.6;}
+.ai-loading{display:flex;align-items:center;gap:8px;color:var(--t3);font-size:13px;}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);animation:aidot .8s ease-in-out infinite;}
+.ai-dot:nth-child(2){animation-delay:.2s;}
+.ai-dot:nth-child(3){animation-delay:.4s;}
+@keyframes aidot{0%,80%,100%{transform:scale(.8);opacity:.5;}40%{transform:scale(1);opacity:1;}}
+/* VAQT */
+.vaqt-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;}
+.vaqt-row{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--b1);}
+.vaqt-row:last-child{border-bottom:none;}
+.vaqt-row.current{background:linear-gradient(90deg,#4f8ef715,transparent);}
+.vaqt-name{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;}
+.vaqt-time-val{font-size:14px;font-weight:700;color:var(--acc);}
+.vaqt-cur-badge{font-size:9px;background:var(--gold);color:#000;border-radius:4px;padding:1px 5px;font-weight:700;}
+/* QIBLA */
+.qibla-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px;text-align:center;}
+.compass-wrap{position:relative;width:200px;height:200px;margin:16px auto;}
+.compass-bg{width:200px;height:200px;border-radius:50%;border:2px solid var(--b1);background:radial-gradient(circle,var(--s2),var(--bg));display:flex;align-items:center;justify-content:center;position:relative;}
+/* Derajalar */
+.compass-deg-ring{position:absolute;inset:0;border-radius:50%;}
+.compass-deg-ring span{position:absolute;font-size:9px;font-weight:700;color:var(--t3);}
+.compass-needle{position:absolute;width:4px;height:85px;background:linear-gradient(to bottom,var(--miss) 50%,var(--done) 50%);border-radius:2px;left:50%;top:50%;transform-origin:50% 100%;transform:translateX(-50%) translateY(-100%) rotate(0deg);transition:transform .2s ease-out;}
+.qibla-arrow{position:absolute;width:6px;height:95px;top:50%;left:50%;transform-origin:50% 100%;transform:translateX(-50%) translateY(-100%) rotate(245deg);transition:transform .2s ease-out;}
+.qibla-arrow::before{content:'🕋';font-size:20px;position:absolute;top:-10px;left:50%;transform:translateX(-50%);}
+.cdir{position:absolute;font-size:11px;font-weight:700;color:var(--t3);}
+.cdir.n{top:8px;left:50%;transform:translateX(-50%);color:var(--miss);}
+.cdir.s{bottom:8px;left:50%;transform:translateX(-50%);}
+.cdir.e{right:8px;top:50%;transform:translateY(-50%);}
+.cdir.w{left:8px;top:50%;transform:translateY(-50%);}
+.compass-accuracy{font-size:11px;color:var(--t3);margin-top:6px;}
+.qibla-deg{font-size:28px;font-weight:800;color:var(--gold);margin-top:10px;}
+.qibla-start-btn{background:var(--acc);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;padding:12px 24px;cursor:pointer;margin-top:14px;}
+.ram-card{background:linear-gradient(135deg,#0d1f3d,#150d35);border:1px solid #4f8ef730;border-radius:var(--r);padding:16px;}
+.ram-times{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ram-time-box{background:#ffffff10;border-radius:12px;padding:12px;text-align:center;}
+.ram-time-lbl{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;}
+.ram-time-val{font-size:22px;font-weight:800;margin-top:4px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+.toggle{position:relative;width:44px;height:26px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;border-radius:13px;background:var(--b1);cursor:pointer;transition:.3s;}
+.toggle-slider::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;bottom:3px;left:3px;transition:.3s;}
+.toggle input:checked+.toggle-slider{background:var(--acc);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);}
+/* SOZLAMALAR */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.theme-btn{border-radius:14px;padding:16px 10px;text-align:center;cursor:pointer;border:2px solid transparent;}
+.theme-btn.active{border-color:var(--acc);}
+.theme-circle{width:36px;height:36px;border-radius:50%;margin:0 auto 8px;}
+.theme-name{font-size:12px;font-weight:600;color:var(--t2);}
+.settings-list{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;}
+.settings-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--b1);cursor:pointer;}
+.settings-row:last-child{border-bottom:none;}
+.settings-icon{width:36px;height:36px;border-radius:10px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.settings-text{flex:1;}
+.settings-name{font-size:14px;font-weight:500;}
+.settings-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.settings-arr{color:var(--t4);font-size:16px;}
+.notif-toggle{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--b1);}
+.notif-info{flex:1;}
+.notif-name{font-size:14px;font-weight:500;}
+.notif-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+/* API KEY INPUT */
+.api-input{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:10px;color:var(--t1);font-size:13px;padding:10px 14px;outline:none;font-family:'Inter',sans-serif;margin-top:8px;}
+.settings-field{margin-top:10px;}
+.settings-label{font-size:11px;color:var(--t3);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
+.settings-select,.settings-number{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:10px;color:var(--t1);font-size:13px;padding:10px 12px;outline:none;font-family:'Inter',sans-serif;}
+.offset-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px;}
+.offset-grid .settings-number{text-align:center;padding:9px 4px;}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:#000000c0;z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-sheet{background:var(--s1);border-radius:20px 20px 0 0;width:100%;padding:20px;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);border-top:1px solid var(--b1);max-height:80vh;overflow-y:auto;}
+.modal-overlay.open .modal-sheet{transform:translateY(0);}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;text-align:center;}
+.modal-input{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:12px;color:var(--t1);font-size:16px;padding:12px 16px;outline:none;font-family:'Inter',sans-serif;margin-bottom:12px;}
+.modal-textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:12px;color:var(--t1);font-size:15px;padding:12px 16px;outline:none;font-family:'Inter',sans-serif;margin-bottom:12px;min-height:100px;resize:none;line-height:1.5;}
+.modal-btns{display:flex;gap:8px;}
+.modal-cancel{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:12px;color:var(--t2);font-size:14px;font-weight:600;padding:12px;cursor:pointer;}
+.modal-ok{flex:1;background:var(--acc);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:600;padding:12px;cursor:pointer;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--s2);border:1px solid var(--acc);color:var(--t1);padding:10px 22px;border-radius:50px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.konfetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;animation:kfall 2s ease-in forwards;pointer-events:none;z-index:300;}
+@keyframes kfall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+.btn-full{width:100%;padding:13px;border:none;border-radius:12px;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:0;}
+.pad{height:24px;}
+.spinner{width:20px;height:20px;border:2px solid var(--b1);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.diary-empty{padding:24px;text-align:center;color:var(--t3);font-size:13px;}
+.diary-entry{padding:14px 16px;border-bottom:1px solid var(--b1);}
+.diary-entry:last-child{border-bottom:none;}
+.diary-date{font-size:11px;color:var(--t3);margin-bottom:4px;}
+.diary-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;}
+.ics-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+</style>
+</head>
+<body data-theme="blue">
+<div class="sky-bg" id="skyBg"></div>
+<div class="pages" id="pages">
+
+<!-- NAMOZ -->
+<div class="page active" id="pg-namoz">
+  <div class="hdr">
+    <div class="hdr-eyebrow">☪ Namoz Pro</div>
+    <div class="hdr-date" id="hdrDate"></div>
+    <div class="hdr-hijri" id="hdrHijri"></div>
+    <div id="jumaWrap"></div>
+  </div>
+  <div class="countdown-bar">
+    <div><div class="cd-left">Keyingi namoz</div><div class="cd-name" id="cdName">—</div></div>
+    <div class="cd-time" id="cdTime">--:--:--</div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <div class="nav-mid"><div class="nav-wd" id="navWd"></div><div class="nav-fd" id="navFd"></div></div>
+    <button class="nav-today" id="todayBtn" style="display:none">Bugun</button>
+    <button class="nav-btn" id="nextBtn">›</button>
+  </div>
+  <div class="profile-bar" id="profileBar"></div>
+  <!-- Kunlik hadis/karta -->
+  <div class="sec" style="margin-top:14px"><div class="daily-card" id="dailyCard"><div class="daily-img">🌟</div><div class="daily-eyebrow">Bugungi hadis</div><div class="daily-text" id="dailyText"></div><div class="daily-src" id="dailySrc"></div></div></div>
+  <div style="padding:14px 14px 0">
+    <div class="ring-card">
+      <div class="ring-wrap">
+        <svg width="76" height="76" viewBox="0 0 76 76">
+          <circle cx="38" cy="38" r="30" fill="none" stroke="#1e2d45" stroke-width="7"/>
+          <circle cx="38" cy="38" r="30" fill="none" stroke="#4f8ef7" stroke-width="7" stroke-linecap="round" id="ringC" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+        </svg>
+        <div class="ring-lbl" id="ringLbl">0/5</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700" id="ringTitle">Bugungi namozlar</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:3px" id="ringSub">Bosing — belgilang</div>
+      </div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="stats-grid">
+      <div class="stat-box green"><div class="stat-num" id="stDone">0</div><div class="stat-lbl">O'qildi</div></div>
+      <div class="stat-box gold"><div class="stat-num" id="stStreak">0</div><div class="stat-lbl">🔥 Streak</div></div>
+      <div class="stat-box red"><div class="stat-num" id="stQaza">0</div><div class="stat-lbl">Qazolar</div></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px"><div class="week-card"><div class="sec-title" style="margin-bottom:10px">Hafta</div><div class="week-row" id="weekRow"></div></div></div>
+  <div class="sec" style="margin-top:10px"><div class="sec-title">Namozlar</div><div class="namoz-list" id="namozList"></div></div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🎯 Qaza rejasi</div>
+    <div class="reja-card">
+      <div class="reja-row"><div class="reja-label">Bugun nechta qaza o'qiyman?</div><button class="reja-btn" onclick="chReja(-1)">−</button><div class="reja-num" id="rejaMaqsad">0</div><button class="reja-btn" onclick="chReja(1)">+</button></div>
+      <div class="reja-row" style="margin-bottom:0"><div class="reja-label">O'qildi</div><button class="reja-btn" onclick="chRejaO(-1)">−</button><div class="reja-num" id="rejaOqildi">0</div><button class="reja-btn" onclick="chRejaO(1)">+</button></div>
+      <div class="reja-prog"><div class="reja-prog-bar" id="rejaBar" style="width:0%"></div></div>
+      <div style="font-size:12px;color:var(--t3);margin-top:6px" id="rejaInfo">Maqsad qo'ying</div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px" id="qazaSec"></div>
+  <div class="pad"></div>
+</div>
+
+<!-- STATISTIKA -->
+<div class="page" id="pg-stat">
+  <div class="hdr" style="padding-top:52px"><div class="hdr-eyebrow">📊 Statistika</div><div class="hdr-date" id="statMonthLbl"></div></div>
+  <div class="sec" style="margin-top:14px"><div class="sec-title">📅 Oylik hisobot</div><div class="hisobot-card" id="hisobotCard"></div></div>
+  <div class="sec" style="margin-top:10px">
+    <div class="streak-card">
+      <div style="font-size:40px">🔥</div>
+      <div><div style="font-size:32px;font-weight:800;color:var(--gold);letter-spacing:-1px" id="streakNum">0</div><div style="font-size:12px;color:var(--t3)">Ketma-ket kun</div><div style="font-size:11px;color:var(--acc);margin-top:2px" id="streakBest">Eng yaxshi: 0 kun</div></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🎯 Haftalik challenge</div>
+    <div class="challenge-card">
+      <div style="font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Bu hafta — 5/5 farz maqsad</div>
+      <div style="font-size:36px;font-weight:800" id="chProgress">0/7</div>
+      <div style="font-size:12px;color:var(--t3)">kun to'liq o'qildi</div>
+      <div style="height:6px;background:var(--b1);border-radius:3px;margin-top:12px;overflow:hidden"><div style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .5s" id="chBarFill"></div></div>
+      <div class="ch-days" id="chDays"></div>
+    </div>
+  </div>
+  <!-- Haftalik taqqoslash -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">📊 Haftalik taqqoslash</div>
+    <div class="compare-card" id="compareCard"></div>
+  </div>
+  <div class="sec" style="margin-top:10px"><div class="sec-title">Oxirgi 7 kun</div><div class="chart-wrap"><div class="chart-bars" id="chartBars"></div></div></div>
+  <div class="sec" style="margin-top:10px"><div class="sec-title">📈 Eng ko'p qoldirilgan</div><div class="miss-stat" id="missStat"></div></div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">Yillik faollik</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;overflow:hidden">
+      <div class="heatmap-wrap"><div class="heatmap" id="heatmap"></div></div>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:8px;justify-content:flex-end">
+        <span style="font-size:10px;color:var(--t3)">Kam</span>
+        <div style="width:10px;height:10px;border-radius:2px;background:var(--s2)"></div>
+        <div style="width:10px;height:10px;border-radius:2px;background:#15552a"></div>
+        <div style="width:10px;height:10px;border-radius:2px;background:#22c55e"></div>
+        <span style="font-size:10px;color:var(--t3)">Ko'p</span>
+      </div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">Oylik taqvim</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <button class="nav-btn" id="calPrev" style="width:32px;height:32px;font-size:16px">‹</button>
+        <div style="font-size:15px;font-weight:700" id="calMonthLbl"></div>
+        <button class="nav-btn" id="calNext" style="width:32px;height:32px;font-size:16px">›</button>
+      </div>
+      <div class="cal-grid" id="calHead"></div>
+      <div class="cal-grid" style="margin-top:4px" id="calBody"></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px"><div class="sec-title">Qaza tafsiloti</div><div class="qaza-card" id="qazaDetail"></div></div>
+  <div class="sec" style="margin-top:10px"><div class="sec-title">🏆 Yutuqlar</div><div class="ach-grid" id="achGrid"></div></div>
+  <div class="pad"></div>
+</div>
+
+<!-- ZIKR & DUO -->
+<div class="page" id="pg-zikr">
+  <div class="hdr" style="padding-top:52px"><div class="hdr-eyebrow">🤲 Zikr & Duo'lar</div><div class="hdr-date" id="zikrDate"></div></div>
+  <!-- Tasbeh -->
+  <div class="sec" style="margin-top:14px">
+    <div class="sec-title">📿 Tasbeh</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px">
+      <div class="tasbeh-sel" id="tasbehSelector"></div>
+      <div class="tasbeh-wrap">
+        <div class="tasbeh-count" id="tasbehCount">0</div>
+        <div style="font-size:16px;font-weight:600;color:var(--acc);margin-top:4px" id="tasbehName"></div>
+        <div style="font-size:20px;color:var(--gold);margin-top:4px" id="tasbehArabic"></div>
+        <div style="font-size:12px;color:var(--t3);margin-top:4px" id="tasbehTargetLbl"></div>
+      </div>
+      <button class="tasbeh-btn" onclick="tasbehTap()">+</button>
+      <div class="tasbeh-prog"><div class="tasbeh-prog-fill" id="tasbehProgFill" style="width:0%"></div></div>
+      <div class="tasbeh-ctrls">
+        <button class="tasbeh-ctrl" onclick="tasbehReset()">↺ Nolga</button>
+        <button class="tasbeh-ctrl" onclick="tasbehNext()">Keyingi →</button>
+      </div>
+      <div style="font-size:13px;color:var(--t3);text-align:center;margin-top:8px" id="tasbehTotalLbl"></div>
+    </div>
+  </div>
+  <!-- Qur'on -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">📖 Qur'on sahifalari</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px">
+      <div style="text-align:center;padding:12px 0"><div style="font-size:52px;font-weight:800;color:var(--acc);letter-spacing:-2px;line-height:1" id="quranToday">0</div><div style="font-size:12px;color:var(--t3);margin-top:4px">sahifa bugun</div></div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button style="width:44px;height:44px;border-radius:12px;border:1px solid var(--b1);background:var(--s2);color:var(--t1);font-size:14px;font-weight:700;cursor:pointer" onclick="chQ(-5)">-5</button>
+        <button style="width:44px;height:44px;border-radius:12px;border:1px solid var(--b1);background:var(--s2);color:var(--t1);font-size:14px;font-weight:700;cursor:pointer" onclick="chQ(-1)">-1</button>
+        <button style="background:var(--acc);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;padding:0 20px;height:44px;cursor:pointer" onclick="chQ(1)">+1 sahifa</button>
+        <button style="width:44px;height:44px;border-radius:12px;border:1px solid var(--b1);background:var(--s2);color:var(--t1);font-size:14px;font-weight:700;cursor:pointer" onclick="chQ(5)">+5</button>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;margin-top:10px">
+        <div><div style="font-size:11px;color:var(--t3)">Jami</div><div style="font-size:15px;font-weight:700;color:var(--gold)" id="quranTotal">0 sahifa</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--t3)">Xatm</div><div style="font-size:15px;font-weight:700;color:var(--gold)" id="quranXatm">0</div></div>
+      </div>
+    </div>
+  </div>
+  <!-- AI Duo Tavsiya -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🤖 Aqlli Duo Qidirish</div>
+    <div class="ai-duo-card">
+      <div style="font-size:13px;color:var(--t2);margin-bottom:12px">Holatni yozing — mahalliy bazadan yoki to’g’ridan Qur’on va Hadisdan topib beradi</div>
+      <div class="ai-input-row">
+        <input class="ai-input" id="aiInput" placeholder="Masalan: safar, kasallik, ota-onam uchun..." onkeydown="if(event.key==='Enter')askAI()"/>
+        <button class="ai-btn" id="aiSearchBtn" onclick="askAI()">Topish</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <button id="onlineBtn" onclick="searchFromInternet()" style="padding:10px 6px;border:1px solid var(--acc);border-radius:12px;background:transparent;color:var(--acc);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">📖 Qur’on oyati</button>
+        <button id="hadithBtn" onclick="searchHadith()" style="padding:10px 6px;border:1px solid var(--gold);border-radius:12px;background:transparent;color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">📜 Hadis</button>
+      </div>
+      <div class="ai-result" id="aiResult" style="margin-top:10px"><div style="font-size:13px;color:var(--t3);text-align:center;padding:8px 0">🔍 Holatni yozing va qidiruv turini tanlang</div></div>
+      <div id="aiModeLabel" style="font-size:10px;color:var(--t3);text-align:right;margin-top:6px"></div>
+    </div>
+  </div>
+  <!-- Duo qidirish -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🤲 Duo'lar (60+ ta)</div>
+    <div class="search-bar">
+      <input class="search-input" id="duoSearch" placeholder="🔍 Duo qidiring..." oninput="renderDuo()">
+    </div>
+    <div class="cat-tabs" id="catTabs"></div>
+    <div class="duo-card" id="duoList"></div>
+  </div>
+  <!-- Kun daftari -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">📝 Kun daftari</div>
+    <div style="margin-bottom:8px"><button class="btn-full" onclick="addDiary()">✏️ Bugungi eslatma yoz</button></div>
+    <div class="diary-card" id="diaryList"></div>
+  </div>
+  <div class="pad"></div>
+</div>
+
+
+<!-- QIBLA -->
+<div class="page" id="pg-qibla">
+  <div class="hdr" style="padding-top:52px"><div class="hdr-eyebrow">🕌 Qibla & Vaqtlar</div><div class="hdr-date" id="vaqtCity">Farg'ona</div></div>
+  <div class="sec" style="margin-top:14px"><div class="sec-title">🕐 Namoz vaqtlari</div><div class="vaqt-card" id="vaqtList"></div></div>
+  <div class="sec" style="margin-top:10px">
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px">
+      <div style="font-size:13px;color:var(--t2);margin-bottom:12px">30 kunlik vaqtlar iOS kalendariga qo'shiladi</div>
+      <button class="ics-btn" onclick="exportICS()">📅 Kalendarga qo'shish (.ics)</button>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🧭 Qibla yo'nalishi</div>
+    <div class="qibla-card">
+      <div style="font-size:13px;color:var(--t3)" id="qiblaPlace">Farg'onadan Makkaga ~245°</div>
+      <div class="compass-wrap">
+        <div class="compass-bg">
+          <div style="position:absolute;inset:0">
+            <div class="cdir n">Sh</div><div class="cdir s">J</div>
+            <div class="cdir e">Sh'</div><div class="cdir w">G'</div>
+          </div>
+          <div class="compass-needle" id="compassNeedle"></div>
+          <div class="qibla-arrow" id="qiblaArrow"></div>
+        </div>
+      </div>
+      <div class="compass-accuracy" id="compassAccuracy">Kompas kutilmoqda...</div>
+      <div class="qibla-deg" id="qiblaDeg">~245°</div>
+      <button class="qibla-start-btn" id="qiblaBtn" onclick="startQibla()">📡 Kompasni yoqish</button>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="ram-card">
+      <div style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px">🌙 Ramazon</div>
+      <div class="ram-times">
+        <div class="ram-time-box"><div class="ram-time-lbl">Sahur</div><div class="ram-time-val" id="sahurTime">04:12</div></div>
+        <div class="ram-time-box"><div class="ram-time-lbl">Iftor</div><div class="ram-time-val" id="iftorTime">20:48</div></div>
+      </div>
+      <div class="toggle-row"><div style="font-size:13px;color:var(--t2)">Ramazon rejimi</div>
+        <label class="toggle"><input type="checkbox" id="ramToggle" onchange="toggleRam()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+  </div>
+  <!-- BAYRAMLAR -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🌙 Islomiy Bayramlar</div>
+    <div class="bayram-countdown" id="bayramCountdown"></div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">📅 Barcha bayramlar</div>
+    <div class="bayram-list" id="bayramList"></div>
+  </div>
+  <div class="pad"></div>
+</div>
+
+<!-- SOZLAMALAR -->
+<div class="page" id="pg-soz">
+  <div class="hdr" style="padding-top:52px"><div class="hdr-eyebrow">⚙️ Sozlamalar</div><div class="hdr-date">Profil va ilova</div></div>
+  <div class="sec" style="margin-top:14px"><div class="sec-title">Oila profillari</div><div class="settings-list" id="profileList"></div></div>
+  <!-- Bildirishnomalar -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🔔 Bildirishnomalar</div>
+    <div class="settings-list" id="notifList"></div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🕐 Vaqt va shahar</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px">
+      <div class="settings-field"><div class="settings-label">Shahar</div><select class="settings-select" id="citySelect" onchange="savePrayerSettings()"></select></div>
+      <div class="settings-field"><div class="settings-label">Hisoblash usuli</div><select class="settings-select" id="methodSelect" onchange="savePrayerSettings()"></select></div>
+      <div class="settings-field"><div class="settings-label">Eslatma oldindan (daq.)</div><input class="settings-number" id="notifLeadInput" type="number" min="0" max="60" step="1" onchange="savePrayerSettings()"></div>
+      <div class="settings-field">
+        <div class="settings-label">Vaqt offsetlari (daq.)</div>
+        <div class="offset-grid" id="offsetGrid"></div>
+      </div>
+      <div class="toggle-row"><div style="font-size:13px;color:var(--t2)">Tahajjud/naflni ro'yxatda ko'rsatish</div>
+        <label class="toggle"><input type="checkbox" id="showNaflToggle" onchange="savePrayerSettings()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+  </div>
+  <!-- Gemini API key -->
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🤖 AI Sozlamalari</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px">
+      <div style="font-size:13px;color:var(--t2)">Gemini API kalitingizni kiriting (bepul: aistudio.google.com)</div>
+      <div style="font-size:11px;color:var(--gold);margin-top:6px">Eslatma: bu bitta HTML fayl bo'lgani uchun kalit brauzer xotirasida saqlanadi. Umumiy qurilmada ishlatmang.</div>
+      <input type="password" class="api-input" id="geminiKeyInput" placeholder="AIza..." oninput="saveGeminiKey()">
+      <div style="font-size:11px;color:var(--t3);margin-top:8px" id="geminiStatus">Kalit kiritilmagan</div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🎨 Rang temasi</div>
+    <div class="theme-grid">
+      <div class="theme-btn active" data-theme="blue" onclick="setTheme('blue')"><div class="theme-circle" style="background:linear-gradient(135deg,#4f8ef7,#7c5cbf)"></div><div class="theme-name">Ko'k</div></div>
+      <div class="theme-btn" data-theme="green" onclick="setTheme('green')"><div class="theme-circle" style="background:linear-gradient(135deg,#22c55e,#16a34a)"></div><div class="theme-name">Yashil</div></div>
+      <div class="theme-btn" data-theme="gold" onclick="setTheme('gold')"><div class="theme-circle" style="background:linear-gradient(135deg,#d4a843,#b8860b)"></div><div class="theme-name">Oltin</div></div>
+      <div class="theme-btn" data-theme="light" onclick="setTheme('light')"><div class="theme-circle" style="background:linear-gradient(135deg,#f8fafc,#2563eb)"></div><div class="theme-name">Yorug'</div></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">🔎 O'qish qulayligi</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px">
+      <div class="settings-field"><div class="settings-label">Shrift kattaligi</div>
+        <select class="settings-select" id="fontSizeSelect" onchange="saveUiSettings()">
+          <option value="normal">Oddiy</option>
+          <option value="large">Katta</option>
+          <option value="xlarge">Juda katta</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="sec-title">💾 Ma'lumotlar</div>
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px">
+      <button onclick="exportData()" style="width:100%;padding:13px;border:none;border-radius:12px;background:var(--acc);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px">📤 Zaxirani saqlash</button>
+      <button onclick="document.getElementById('importFile').click()" style="width:100%;padding:13px;border:1px solid var(--acc);border-radius:12px;background:transparent;color:var(--acc);font-size:14px;font-weight:700;cursor:pointer">📥 Zaxiradan tiklash</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+      <div style="font-size:11px;color:var(--t3);margin-top:10px;text-align:center">Import qilganda ma'lumotlar birlashtiriladi</div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px">
+    <div class="settings-list">
+      <div class="settings-row" onclick="clearAll()"><div class="settings-icon">🗑</div><div class="settings-text"><div class="settings-name">Hammasini tozalash</div></div><div class="settings-arr">›</div></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:10px"><div class="settings-list"><div class="settings-row"><div class="settings-icon">☪</div><div class="settings-text"><div class="settings-name">Namoz Pro</div><div class="settings-sub">v6.0 PRO · AI · Bayramlar · Qibla · Hijriy</div></div></div></div></div>
+  <div class="sec" style="margin-top:10px"><div class="settings-list"><div class="settings-row"><div class="settings-icon">📱</div><div class="settings-text"><div class="settings-name">App holati</div><div class="settings-sub" id="appStatus">Tekshirilmoqda...</div></div></div></div></div>
+  <div class="pad"></div>
+</div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab-item active" onclick="switchTab('namoz')" id="tab-namoz"><div class="tab-icon">🕌</div><div class="tab-label">Namoz</div></div>
+  <div class="tab-item" onclick="switchTab('stat')" id="tab-stat"><div class="tab-icon">📊</div><div class="tab-label">Statistika</div></div>
+  <div class="tab-item" onclick="switchTab('zikr')" id="tab-zikr"><div class="tab-icon">🤲</div><div class="tab-label">Zikr</div></div>
+  <div class="tab-item" onclick="switchTab('qibla')" id="tab-qibla"><div class="tab-icon">🧭</div><div class="tab-label">Qibla</div></div>
+  <div class="tab-item" onclick="switchTab('soz')" id="tab-soz"><div class="tab-icon">⚙️</div><div class="tab-label">Sozlama</div></div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-sheet">
+    <div class="modal-title" id="modalTitle">—</div>
+    <div id="modalBody"></div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeModal()">Bekor</button><button class="modal-ok" onclick="confirmModal()">Saqlash</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const NAMOZLAR=[
+  {key:'tahajjud',name:'Tahajjud',icon:'🌑',time:'02:30'},
+  {key:'bomdod',  name:'Bomdod',  icon:'🌙',time:'04:42'},
+  {key:'peshin',  name:'Peshin',  icon:'☀️', time:'12:48'},
+  {key:'asr',     name:'Asr',     icon:'🌤', time:'17:05'},
+  {key:'shom',    name:'Shom',    icon:'🌆', time:'20:35'},
+  {key:'xufton',  name:'Xufton',  icon:'🌃', time:'22:10'},
+];
+const FARZ_KEYS=['bomdod','peshin','asr','shom','xufton'];
+const DEFAULT_NAMOZ_TIMES=Object.fromEntries(NAMOZLAR.map(n=>[n.key,n.time]));
+const FARZ_NAMOZLAR=()=>NAMOZLAR.filter(n=>FARZ_KEYS.includes(n.key));
+const TRACKED_NAMOZLAR=()=>NAMOZLAR;
+const VISIBLE_NAMOZLAR=()=>ST.settings.showNafl?TRACKED_NAMOZLAR():FARZ_NAMOZLAR();
+const PRAYER_CITIES=[
+  {id:'fergana',label:"Farg'ona",city:'Fergana',country:'Uzbekistan',lat:40.3894,lon:71.7843},
+  {id:'tashkent',label:'Toshkent',city:'Tashkent',country:'Uzbekistan',lat:41.2995,lon:69.2401},
+  {id:'andijan',label:'Andijon',city:'Andijan',country:'Uzbekistan',lat:40.7821,lon:72.3442},
+  {id:'namangan',label:'Namangan',city:'Namangan',country:'Uzbekistan',lat:41.0011,lon:71.6683},
+  {id:'samarkand',label:'Samarqand',city:'Samarkand',country:'Uzbekistan',lat:39.6542,lon:66.9597},
+  {id:'bukhara',label:'Buxoro',city:'Bukhara',country:'Uzbekistan',lat:39.7681,lon:64.4556},
+  {id:'qarshi',label:'Qarshi',city:'Qarshi',country:'Uzbekistan',lat:38.8606,lon:65.7890},
+  {id:'nukus',label:'Nukus',city:'Nukus',country:'Uzbekistan',lat:42.4619,lon:59.6166},
+];
+const PRAYER_METHODS=[
+  {id:2,label:'Muslim World League'},
+  {id:3,label:'Karachi / Hanafi hududlarida keng ishlatiladi'},
+  {id:4,label:'Umm al-Qura, Makkah'},
+  {id:5,label:'Egyptian General Authority'},
+  {id:13,label:'Diyanet'},
+];
+const DAYS_UZ=['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
+const DAYS_S=['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+const MONTHS_UZ=['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
+
+const TASBEHLAR=[
+  {key:'subhan',   name:'SubhanAllah',    arabic:'سُبْحَانَ اللّٰهِ',  target:33},
+  {key:'alhamd',   name:'Alhamdulillah',  arabic:'اَلْحَمْدُ لِلّٰهِ', target:33},
+  {key:'allahu',   name:'Allahu Akbar',   arabic:'اَللّٰهُ أَكْبَرُ',  target:34},
+  {key:'istighfar',name:'Astaghfirullah', arabic:'أَسْتَغْفِرُ اللّٰهَ',target:100},
+  {key:'salavot',  name:'Salavot',        arabic:'اللّٰهُمَّ صَلِّ عَلَى مُحَمَّد',target:100},
+  {key:'hasbun',   name:'Hasbunalloh',    arabic:'حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَكِيلُ',target:70},
+];
+
+// 60+ DUO'LAR
+const DUOLAR=[
+  {cat:'Kundalik',icon:'🌅',name:"Uyqudan turganida",arabic:"اَلْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",uz:"Bizni tiriltirgani va Unga qaytish uchun Allohga hamd bo'lsin.",src:"Buxoriy"},
+  {cat:'Kundalik',icon:'🌙',name:"Uxlashdan oldin",arabic:"بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",uz:"Allohim, Sening isming bilan o'laman va yashaman.",src:"Buxoriy"},
+  {cat:'Kundalik',icon:'🌄',name:"Tong duosi",arabic:"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ",uz:"Biz ham, mulk ham Alloh bilan tongga chiqdi. Allohga hamd.",src:"Muslim"},
+  {cat:'Kundalik',icon:'🌆',name:"Kech duosi",arabic:"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ",uz:"Biz ham, mulk ham Alloh bilan kechga chiqdi. Allohga hamd.",src:"Muslim"},
+  {cat:'Kundalik',icon:'🪞',name:"Ko'zgu oldida",arabic:"اَللَّهُمَّ أَنْتَ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي",uz:"Allohim, yaratilishimni chiroyli qilding, xulqimni ham chiroyli qil.",src:"Ahmad"},
+  {cat:'Kundalik',icon:'👘',name:"Kiyim kiyganida",arabic:"اَلْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا وَرَزَقَنِيهِ",uz:"Meni bu bilan kiyintirgan va rizqlantirgan Allohga hamd.",src:"Tirmiziy"},
+  {cat:'Ovqat',icon:'🍽',name:"Ovqatdan oldin",arabic:"بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ",uz:"Alloh nomi bilan va Allohning barakasi bilan.",src:"Abu Dovud"},
+  {cat:'Ovqat',icon:'🙏',name:"Ovqatdan keyin",arabic:"اَلْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ",uz:"Meni bu bilan oziqlantirgani uchun Allohga hamd.",src:"Tirmiziy"},
+  {cat:'Ovqat',icon:'🫗',name:"Suv ichganda",arabic:"اَلْحَمْدُ لِلَّهِ الَّذِي سَقَانَا عَذْبًا فُرَاتًا",uz:"Bizga chuchuk va shirinni ichdirgan Allohga hamd.",src:"Ibn Majah"},
+  {cat:'Safar',icon:'🚗',name:"Safarga chiqqanda",arabic:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ",uz:"Buni bizga bo'ysundirgan Zotni pok deb bilaman.",src:"Qur'on 43:13"},
+  {cat:'Safar',icon:'✈️',name:"Safar duosi",arabic:"اَللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ",uz:"Allohim, bu safarimizni osonlashtir va uzoqligini yig'ib qo'y.",src:"Muslim"},
+  {cat:'Safar',icon:'🏠',name:"Uyga qaytganda",arabic:"آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ",uz:"Qaytuvchilarmiz, tavba qiluvchilarmiz, ibodat qiluvchilarmiz, Robbimizni maqtovchilarmiz.",src:"Muslim"},
+  {cat:'Masjid',icon:'🕌',name:"Masjidga kirganida",arabic:"اَللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",uz:"Allohim, menga rahmatining eshiklarini oching.",src:"Muslim"},
+  {cat:'Masjid',icon:'🚪',name:"Masjiddan chiqqanda",arabic:"اَللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",uz:"Allohim, Sening fazlingdan so'rayman.",src:"Muslim"},
+  {cat:'Masjid',icon:'📿',name:"Azonga javoban",arabic:"وَأَنَا أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",uz:"Men guvohlik beramanki, Allohdan boshqa iloh yo'q.",src:"Muslim"},
+  {cat:'Namoz',icon:'🤲',name:"Namozdan oldin (niyat)",arabic:"أُصَلِّي فَرْضَ... رَكَعَاتٍ لِلَّهِ تَعَالَى",uz:"...farz namozini Alloh uchun o'qimoqchiman (niyat).",src:"Fiqh"},
+  {cat:'Namoz',icon:'🙏',name:"Qunoot duosi",arabic:"اَللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ وَعَافِنِي فِيمَنْ عَافَيْتَ",uz:"Allohim, hidoyat qilganlaringning ichida menga ham hidoyat ber.",src:"Abu Dovud"},
+  {cat:'Namoz',icon:'⭐',name:"Sajda duosi",arabic:"سُبْحَانَ رَبِّيَ الْأَعْلَى",uz:"Ulug' Robbimni pok deb bilaman.",src:"Buxoriy"},
+  {cat:'Namoz',icon:'🌿',name:"Ruku duosi",arabic:"سُبْحَانَ رَبِّيَ الْعَظِيمِ",uz:"Azim Robbimni pok deb bilaman.",src:"Buxoriy"},
+  {cat:'Namoz',icon:'🌟',name:"Tasbeh namozi",arabic:"سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ",uz:"Alloh pok, hamd Unga, Undan boshqa iloh yo'q, U Buyukdir.",src:"Ibn Majah"},
+  {cat:'Qiyinchilik',icon:'😰',name:"Qiyinchilikda (Yunusning duosi)",arabic:"لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",uz:"Sendan boshqa iloh yo'q, Seni poklaymin, men zolimlardan bo'ldim.",src:"Qur'on 21:87"},
+  {cat:'Qiyinchilik',icon:'💪',name:"Sabr so'rash",arabic:"اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ",uz:"Allohim, g'am va qayg'udan Senga panoh so'rayman.",src:"Buxoriy"},
+  {cat:'Qiyinchilik',icon:'🌊',name:"Mushkul ishda",arabic:"حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ",uz:"Alloh menga yetarli, Undan boshqa iloh yo'q, Unga tavakkal qildim.",src:"Qur'on 9:129"},
+  {cat:'Qiyinchilik',icon:'😔',name:"G'am-tasadda",arabic:"إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ",uz:"Albatta biz Allohnikimiz va Unga qaytuvchilarmiz.",src:"Qur'on 2:156"},
+  {cat:'Rizq',icon:'💰',name:"Rizq uchun",arabic:"اَللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ",uz:"Allohim, haromin o'rniga haroling bilan kifoyalantir.",src:"Tirmiziy"},
+  {cat:'Rizq',icon:'💼',name:"Ish boshlaganda",arabic:"اَللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ",uz:"Allohim, afv va salomatlik so'rayman.",src:"Ahmad"},
+  {cat:'Ilm',icon:'📚',name:"Ilm uchun",arabic:"اَللَّهُمَّ انْفَعْنِي بِمَا عَلَّمْتَنِي وَعَلِّمْنِي مَا يَنْفَعُنِي",uz:"Allohim, o'rgatganingdan foydalantir va foydali narsani o'rgat.",src:"Ibn Majah"},
+  {cat:'Ilm',icon:'✏️',name:"O'qishdan oldin",arabic:"رَبِّ زِدْنِي عِلْمًا",uz:"Ey Robbim, ilmimni oshir.",src:"Qur'on 20:114"},
+  {cat:'Ilm',icon:'🎓',name:"Imtihondan oldin",arabic:"رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي",uz:"Ey Robbim, ko'ksimni kengayt va ishimni osonlashtir.",src:"Qur'on 20:25-26"},
+  {cat:"Sog'liq",icon:'🏥',name:"Kasallikda",arabic:"اَللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ اشْفِ أَنْتَ الشَّافِي",uz:"Allohim, odamlarning Robbi, dardni ket qil, Sen shifobakhshsan.",src:"Buxoriy"},
+  {cat:"Sog'liq",icon:'😷',name:"Kasal ko'rishda",arabic:"لَا بَأْسَ طَهُورٌ إِنْ شَاءَ اللَّهُ",uz:"Xavotir yo'q, Alloh xohlasa, bu poklanishdir.",src:"Buxoriy"},
+  {cat:"Sog'liq",icon:'💊',name:"Dori ichganda",arabic:"بِسْمِ اللَّهِ أَرْقِيكَ مِنْ كُلِّ شَيْءٍ يُؤْذِيكَ",uz:"Alloh nomi bilan zarar beruvchi har narsadan shifо so'rayman.",src:"Muslim"},
+  {cat:'Oila',icon:'👨‍👩‍👧',name:"Oila uchun",arabic:"رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ",uz:"Ey Robbimiz, juftlarimiz va farzandlarimizdan ko'z quvonchi ato et.",src:"Qur'on 25:74"},
+  {cat:'Oila',icon:'👴',name:"Ota-ona uchun",arabic:"رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",uz:"Ey Robbim, ular meni kichikligimda tarbiyalaganidek ularga rahm qilgin.",src:"Qur'on 17:24"},
+  {cat:'Oila',icon:'👶',name:"Farzand uchun",arabic:"رَبِّ هَبْ لِي مِنْ لَدُنْكَ ذُرِّيَّةً طَيِّبَةً",uz:"Ey Robbim, menga O'z huzuringdan solih zurriyot ber.",src:"Qur'on 3:38"},
+  {cat:'Hojatxona',icon:'🚿',name:"Hojatxonaga kirganida",arabic:"اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",uz:"Allohim, erkak va ayol jinlardan panoh so'rayman.",src:"Buxoriy"},
+  {cat:'Hojatxona',icon:'🚽',name:"Hojatxonadan chiqqanda",arabic:"غُفْرَانَكَ",uz:"Sening g'afuringni so'rayman.",src:"Abu Dovud"},
+  {cat:'Kechqurun',icon:'🌙',name:"Kecha panog'i",arabic:"بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي وَبِكَ أَرْفَعُهُ",uz:"Robbim, Sening isming bilan yonboshladim va Sening yordaming bilan turaман.",src:"Buxoriy"},
+  {cat:'Kechqurun',icon:'😴',name:"Tush ko'rganda",arabic:"أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",uz:"Allohning mukammal so'zlari bilan yaratganning yomonligidan panoh so'rayman.",src:"Muslim"},
+  {cat:'Maxsus',icon:'⚡',name:"Hayratdan",arabic:"سُبْحَانَ اللَّهِ",uz:"Alloh pok!",src:"Hadis"},
+  {cat:'Maxsus',icon:'😊',name:"Xursand bo'lganda",arabic:"اَلْحَمْدُ لِلَّهِ",uz:"Allohga hamd!",src:"Hadis"},
+  {cat:'Maxsus',icon:'😱',name:"Hayron bo'lganda",arabic:"سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",uz:"Alloh pok va U maqtovga loyiq!",src:"Buxoriy"},
+  {cat:'Maxsus',icon:'🤝',name:"Uchrashganda",arabic:"اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ",uz:"Sizga Allohning salomi, rahmati va barakasi bo'lsin!",src:"Qur'on"},
+  {cat:'Maxsus',icon:'👋',name:"Xayrlashganda",arabic:"أَسْتَوْدِعُكُمُ اللَّهَ الَّذِي لَا تَضِيعُ وَدَائِعُهُ",uz:"Sizlarni omonnatlari yo'qolmaydigan Allohga topshiraman.",src:"Ahmad"},
+  {cat:'Maxsus',icon:'🤧',name:"Aksirganida",arabic:"اَلْحَمْدُ لِلَّهِ",uz:"Allohga hamd.",src:"Buxoriy"},
+  {cat:'Maxsus',icon:'😮',name:"Aksirgan biriga",arabic:"يَرْحَمُكَ اللَّهُ",uz:"Alloh sizga rahm qilsin.",src:"Buxoriy"},
+  {cat:'Maxsus',icon:'🕯',name:"Shamol esganida",arabic:"اَللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا وَخَيْرَ مَا فِيهَا",uz:"Allohim, undan va undagi yaxshilikdan so'rayman.",src:"Abu Dovud"},
+  {cat:'Maxsus',icon:'⛈',name:"Momaqaldiroqda",arabic:"سُبْحَانَ الَّذِي يُسَبِّحُ الرَّعْدُ بِحَمْدِهِ",uz:"Momaqaldiroq uning hamdi bilan pok deb biladigan Zot pok!",src:"Muvatto"},
+  {cat:'Maxsus',icon:'🌧',name:"Yomg'ir yog'ganda",arabic:"اَللَّهُمَّ صَيِّبًا نَافِعًا",uz:"Allohim, foydali yomg'ir yog'dir.",src:"Buxoriy"},
+  {cat:'Maxsus',icon:'🏠',name:"Uyga kirganida",arabic:"اَللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ",uz:"Allohim, kirish va chiqishning yaxshisini so'rayman.",src:"Abu Dovud"},
+  {cat:'Maxsus',icon:'🔥',name:"O't ko'rganda",arabic:"اَللَّهُ أَكْبَرُ",uz:"Alloh ulug'!",src:"Hadis"},
+  {cat:'Maxsus',icon:'🪬',name:"Ko'z tegishidan saqlash",arabic:"أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّةِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ",uz:"Har shayton va zaharli hasharotdan Allohning mukammal so'zlari bilan panoh.",src:"Buxoriy"},
+  {cat:'Maxsus',icon:'💍',name:"Nikoh barakasi uchun",arabic:"بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ",uz:"Alloh sizga baraka bersin, ustingizga baraka yog'dirsin va sizlarni yaxshilikda birlashtirsin.",src:"Abu Dovud"},
+  {cat:'Maxsus',icon:'🆕',name:"Yangi narsa olganda",arabic:"اَللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهُ وَخَيْرَ مَا جُبِلَ عَلَيْهِ",uz:"Allohim, undan va uning yaratilishidagi yaxshilikdan so'rayman.",src:"Abu Dovud"},
+  {cat:'Maxsus',icon:'🌑',name:"Oy tug'ilganda",arabic:"اَللَّهُ أَكْبَرُ اَللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالْأَمْنِ وَالْإِيمَانِ",uz:"Alloh ulug'! Allohim, uni bizga xavfsizlik va imon bilan chiqar.",src:"Tirmiziy"},
+  {cat:'Maxsus',icon:'💰',name:"Qarz so'raganda",arabic:"اَللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ",uz:"Allohim, haromin o'rniga haroling bilan kifoyalantir va fazlingda boyit.",src:"Tirmiziy"},
+  {cat:'Maxsus',icon:'🎉',name:"Yangi yil yoki bayramda",arabic:"تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ",uz:"Alloh bizdan ham, sizlardan ham qabul qilsin.",src:"Hadis"},
+  {cat:'Maxsus',icon:'📰',name:"Yaxshi xabar eshitganda",arabic:"اَلْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ",uz:"Yaxshi ishlar uning ne'mati bilan tugallanadigan Allohga hamd.",src:"Ibn Majah"},
+  {cat:'Maxsus',icon:'😣',name:"Yomon xabar eshitganda",arabic:"اَلْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ",uz:"Har holatda Allohga hamd.",src:"Ibn Majah"},
+  {cat:'Maxsus',icon:'🧠',name:"Unutqoqlikda",arabic:"سُبْحَانَ مَنْ لَا يَنْسَى",uz:"Unutmaydigan Zot pok!",src:"Hadis"},
+  {cat:'Maxsus',icon:'🌃',name:"Ramazon kechalarida",arabic:"اَللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",uz:"Allohim, Sen afv qiluvchisan, afvni yaxshi ko'rasan, meni afv qil.",src:"Tirmiziy"},
+];
+
+const HADISLAR=[
+  {text:"Namoz mo'minning me'roji (ko'tarilish joyi)dir.",src:"Hadis"},
+  {text:"Birinchi so'raladigan narsa namozdir. Agar u to'g'ri bo'lsa, qolgan amallari ham to'g'ri bo'ladi.",src:"Tirmiziy"},
+  {text:"Solih amal ichida eng yaxshisi — vaqtida o'qilgan namozdir.",src:"Buxoriy"},
+  {text:"Namoz nur, sadaqa hujjat, sabr ziyodur.",src:"Muslim"},
+  {text:"Allohni ko'p zikr qilinglar, balki najot toparsizlar.",src:"Qur'on 62:10"},
+  {text:"Sabr va namoz bilan yordam so'ranglar. Alloh sabr qiluvchilar bilan.",src:"Qur'on 2:153"},
+  {text:"Kim besh vaqt namozni asrasa, Alloh unga beshta narsani beradi.",src:"Hadis"},
+  {text:"Qalblar Allohning zikri bilan tinchlanadi.",src:"Qur'on 13:28"},
+  {text:"Duо — ibodat o'zidir.",src:"Tirmiziy"},
+  {text:"Kim Allohga tavakkal qilsa, Alloh unga yetarlidir.",src:"Qur'on 65:3"},
+  {text:"Qiyomat kuni bandadan birinchi so'raladigan narsa namozdir.",src:"Nasa'iy"},
+  {text:"Eng yaxshi sadaqa — Ramazon sadaqasidir.",src:"Tirmiziy"},
+  {text:"Kishi do'stining dini ustidadir.",src:"Abu Dovud"},
+  {text:"Ilm o'rganish har bir musulmonga farzdir.",src:"Ibn Majah"},
+  {text:"Kuchli mo'min zaif mo'mindan Alloh oldida yaxshiroq va sevimlidir.",src:"Muslim"},
+];
+
+const ACHIEVEMENTS=[
+  {key:'first', icon:'🌟',name:'Birinchi kun', req:s=>s>=1},
+  {key:'str3',  icon:'🔥',name:'3 kun streak',req:s=>s>=3},
+  {key:'str7',  icon:'🏅',name:'7 kun streak',req:s=>s>=7},
+  {key:'str30', icon:'🥇',name:'30 kun streak',req:s=>s>=30},
+  {key:'q100',  icon:'📖',name:'100 sahifa',  req:(s,q)=>q>=100},
+  {key:'xatm',  icon:'🕋',name:'Xatm!',       req:(s,q)=>q>=604},
+  {key:'z1000', icon:'📿',name:'1000 zikr',   req:(s,q,z)=>z>=1000},
+  {key:'noqaza',icon:'✨',name:'Qazosiz hafta',req:(s,q,z,nq)=>nq===0},
+  {key:'str100',icon:'💎',name:'100 kun',      req:s=>s>=100},
+];
+
+// ============================================================
+// ISLOMIY BAYRAMLAR — Hijriy sanalar asosida
+// ============================================================
+const BAYRAMLAR_HIJRI=[
+  {key:'ramazon',   icon:'🌙', name:'Ramazon boshlanishi',   hijriM:9,  hijriD:1,  color:'#7c5cbf'},
+  {key:'laylatul',  icon:'⭐', name:'Laylatul Qadr (27-kecha)',hijriM:9, hijriD:27, color:'#d4a843'},
+  {key:'iydfitr',   icon:'🎉', name:"Iyd ul-Fitr (Ro'za hayit)",hijriM:10,hijriD:1,  color:'#22c55e'},
+  {key:'arafat',    icon:'🕋', name:"Arafat kuni",             hijriM:12, hijriD:9,  color:'#4f8ef7'},
+  {key:'iydadha',   icon:'🐑', name:"Iyd ul-Adha (Qurbon hayit)",hijriM:12,hijriD:10,color:'#ef4444'},
+  {key:'muharram',  icon:'🌑', name:"Hijriy Yangi Yil (Muharram 1)",hijriM:1,hijriD:1,color:'#7c5cbf'},
+  {key:'ashura',    icon:'💧', name:"Ashura kuni",              hijriM:1,  hijriD:10, color:'#4f8ef7'},
+  {key:'mawlid',    icon:'💚', name:"Mawlid an-Nabi ﷺ",         hijriM:3,  hijriD:12, color:'#22c55e'},
+  {key:'rajab',     icon:'✨', name:"Rajab 1 (Muborak oy)",    hijriM:7,  hijriD:1,  color:'#d4a843'},
+  {key:'miraj',     icon:'🚀', name:"Isro va Mi'roj",           hijriM:7,  hijriD:27, color:'#7c5cbf'},
+  {key:'shaban',    icon:'🌿', name:"Sha'bon 15 (Barat kechasi)",hijriM:8, hijriD:15, color:'#4f8ef7'},
+];
+
+// Hijriy sanani milodiyga aylantirish
+function hijriToGregorian(hy,hm,hd){
+  // Al-Biruni formulasi asosida taxminiy hisob
+  const N=hd+Math.ceil(29.5*(hm-1))+Math.floor((hy-1)*354+hy/30*11);
+  const JD=N+1948438.5-385;
+  const l=Math.floor(JD+68569),n=Math.floor(4*l/146097);
+  const ll=l-Math.floor((146097*n+3)/4),i=Math.floor(4000*(ll+1)/1461001);
+  const lll=ll-Math.floor(1461*i/4)+31,j=Math.floor(80*lll/2447);
+  const day=lll-Math.floor(2447*j/80),lf=Math.floor(j/11);
+  const month=j+2-12*lf,year=100*(n-49)+i+lf;
+  return new Date(year,month-1,day);
+}
+
+// Joriy hijriy yilni aniqlash (taxminiy)
+function currentHijriYear(){
+  const now=new Date();
+  // 2025 = taxminan 1446-1447 H
+  const diffDays=Math.floor((now-new Date('2024-07-07'))/86400000);
+  const hijriYear=1446+Math.floor(diffDays/354.37);
+  return hijriYear;
+}
+
+// Keyingi bayram sanasini hisoblash
+function getNextBayramDates(){
+  const now=new Date();now.setHours(0,0,0,0);
+  const hy=currentHijriYear();
+  const results=[];
+  BAYRAMLAR_HIJRI.forEach(b=>{
+    // Bir necha yilni tekshirish
+    for(let y=hy-1;y<=hy+2;y++){
+      try{
+        const gDate=hijriToGregorian(y,b.hijriM,b.hijriD);
+        if(!isNaN(gDate.getTime())){
+          const diff=Math.ceil((gDate-now)/86400000);
+          results.push({...b,gDate,diff,hijriYear:y});
+        }
+      }catch{}
+    }
+  });
+  results.sort((a,b)=>a.gDate-b.gDate);
+  // Har bir bayram uchun eng yaqin sanani saqla
+  const seen=new Set();
+  return results.filter(r=>{
+    if(seen.has(r.key))return false;
+    if(r.diff>=-1){seen.add(r.key);return true;}
+    return false;
+  }).sort((a,b)=>a.diff-b.diff);
+}
+
+function renderBayramlar(){
+  const dates=getNextBayramDates();
+  // Countdown — keyingi bayram
+  const next=dates.find(d=>d.diff>=0)||dates[0];
+  const cd=document.getElementById('bayramCountdown');
+  if(next&&cd){
+    const diff=Math.max(0,next.diff);
+    const days=diff;
+    const months=Math.floor(days/30);
+    const weeks=Math.floor(days/7);
+    cd.innerHTML=`
+      <div style="font-size:28px;margin-bottom:6px">${next.icon}</div>
+      <div class="bayram-name">${next.name}</div>
+      <div class="bayram-date">${next.gDate.toLocaleDateString('uz-UZ',{day:'numeric',month:'long',year:'numeric'})}</div>
+      <div class="bayram-timer">
+        <div class="btimer-box"><div class="btimer-num">${Math.floor(days/30)}</div><div class="btimer-lbl">Oy</div></div>
+        <div class="btimer-box"><div class="btimer-num">${days%30}</div><div class="btimer-lbl">Kun</div></div>
+        <div class="btimer-box"><div class="btimer-num">${Math.floor((days%30)*24/30)}</div><div class="btimer-lbl">Soat</div></div>
+        <div class="btimer-box"><div class="btimer-num">${days===0?'🎉':days}</div><div class="btimer-lbl">${days===0?'BUGUN':'kun'}</div></div>
+      </div>
+      ${days===0?'<div style="font-size:13px;color:var(--done);margin-top:10px;font-weight:600">🎉 Muborak bayram! Alloh qabul qilsin!</div>':''}
+    `;
+  }
+  // Barcha bayramlar ro'yxati
+  const list=document.getElementById('bayramList');
+  if(!list)return;
+  list.innerHTML='';
+  dates.slice(0,11).forEach(b=>{
+    const row=document.createElement('div');
+    row.className='bayram-item';
+    let daysLbl,daysClass;
+    if(b.diff===0){daysLbl='Bugun!';daysClass='today';}
+    else if(b.diff>0&&b.diff<=30){daysLbl=`${b.diff} kun`;daysClass='soon';}
+    else if(b.diff>30){daysLbl=`${Math.floor(b.diff/30)} oy ${b.diff%30} kun`;daysClass='soon';}
+    else{daysLbl='O\'tdi';daysClass='past';}
+    row.innerHTML=`
+      <div class="bayram-item-icon">${b.icon}</div>
+      <div class="bayram-item-info">
+        <div class="bayram-item-name">${b.name}</div>
+        <div class="bayram-item-date">${b.gDate.toLocaleDateString('uz-UZ',{day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+      <div class="bayram-item-days ${daysClass}">${daysLbl}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+
+
+// ============================================================
+// STATE
+// ============================================================
+let ST=loadST();
+let curDate=todayKey();
+let curProfile=ST.profiles[0]?.id||'main';
+let calY,calM;
+let curTasbeh=0;
+let modalCb=null,modalType='text';
+let curDuoCat='Barchasi';
+let compassHeadings=[];
+
+function defaultSettings(){
+  return{
+    theme:'blue',fontSize:'normal',ramazon:false,geminiKey:'',
+    city:'fergana',method:2,showNafl:true,notifLead:5,
+    offsets:{bomdod:0,peshin:0,asr:0,shom:0,xufton:0},
+    notifs:{}
+  };
+}
+function normalizeST(s){
+  const base={
+    profiles:[{id:'main',name:'Men',emoji:'👤'}],
+    data:{},zikr:{},quran:{},diary:{},reja:{},tasbeh:{},
+    settings:defaultSettings(),
+  };
+  const out={...base,...(s||{})};
+  out.settings={...defaultSettings(),...(s?.settings||{})};
+  out.settings.offsets={...defaultSettings().offsets,...(s?.settings?.offsets||{})};
+  out.settings.notifs={...(s?.settings?.notifs||{})};
+  ['data','zikr','quran','diary','reja','tasbeh'].forEach(k=>{if(!out[k])out[k]={};});
+  if(!Array.isArray(out.profiles)||out.profiles.length===0)out.profiles=base.profiles;
+  return out;
+}
+function loadST(){
+  try{const s=JSON.parse(localStorage.getItem('namozpro_v5')||'null');if(s)return normalizeST(s);}catch{}
+  return normalizeST(null);
+}
+function saveST(){localStorage.setItem('namozpro_v5',JSON.stringify(ST));}
+function todayKey(){const d=new Date();return fmt(d);}
+function z2(n){return String(n).padStart(2,'0');}
+function fmt(d){return`${d.getFullYear()}-${z2(d.getMonth()+1)}-${z2(d.getDate())}`;}
+function parseKey(k){const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);}
+function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function getPD(pid,dk){if(!ST.data[pid])ST.data[pid]={};if(!ST.data[pid][dk])ST.data[pid][dk]={};return ST.data[pid][dk];}
+function getZD(pid,dk){if(!ST.zikr[pid])ST.zikr[pid]={};if(!ST.zikr[pid][dk])ST.zikr[pid][dk]={};return ST.zikr[pid][dk];}
+function getQP(pid,dk){if(!ST.quran[pid])ST.quran[pid]={};return ST.quran[pid][dk]||0;}
+function getReja(dk){if(!ST.reja[dk])ST.reja[dk]={maqsad:0,oqildi:0};return ST.reja[dk];}
+function farzDoneCount(day){return FARZ_NAMOZLAR().filter(n=>day[n.key]==='done').length;}
+function farzMissCount(day){return FARZ_NAMOZLAR().filter(n=>day[n.key]==='missed').length;}
+function farzTarget(){return FARZ_NAMOZLAR().length;}
+function currentCity(){return PRAYER_CITIES.find(c=>c.id===ST.settings.city)||PRAYER_CITIES[0];}
+function addMinutesToTime(time,mins){
+  const [h,m]=time.split(':').map(Number);
+  let total=(h*60+m+Number(mins||0))%(24*60);
+  if(total<0)total+=24*60;
+  return `${z2(Math.floor(total/60))}:${z2(total%60)}`;
+}
+
+// Real namoz vaqtlar: tanlangan shahar uchun API, internet bo'lmasa yuqoridagi default vaqtlar qoladi.
+let prayerTimeCache={};
+function cleanPrayerTime(v){return String(v||'').match(/\d{1,2}:\d{2}/)?.[0]?.padStart(5,'0')||null;}
+function applyPrayerTimes(times){
+  if(!times)return;
+  times.forEach(pt=>{const n=NAMOZLAR.find(x=>x.key===pt.key);if(n&&pt.time)n.time=pt.time;});
+}
+async function loadPrayerTimes(dateKey=todayKey()){
+  const city=currentCity();
+  const cacheKey=[dateKey,city.id,ST.settings.method,JSON.stringify(ST.settings.offsets)].join('|');
+  if(prayerTimeCache[cacheKey]){applyPrayerTimes(prayerTimeCache[cacheKey]);return prayerTimeCache[cacheKey];}
+  try{
+    const d=parseKey(dateKey);
+    const url=`https://api.aladhan.com/v1/timingsByCity/${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}?city=${encodeURIComponent(city.city)}&country=${encodeURIComponent(city.country)}&method=${encodeURIComponent(ST.settings.method||2)}`;
+    const r=await fetch(url);const j=await r.json();
+    if(j.code!==200)throw new Error('Prayer time API error');
+    const t=j.data.timings||{};
+    const map={bomdod:'Fajr',peshin:'Dhuhr',asr:'Asr',shom:'Maghrib',xufton:'Isha'};
+    NAMOZLAR.forEach(n=>{
+      const nt=cleanPrayerTime(t[map[n.key]]);
+      if(nt)n.time=addMinutesToTime(nt,ST.settings.offsets?.[n.key]||0);
+    });
+    prayerTimeCache[cacheKey]=NAMOZLAR.map(n=>({...n}));
+    applyPrayerTimes(prayerTimeCache[cacheKey]);
+    updateCountdown();
+    return prayerTimeCache[cacheKey];
+  }catch(e){
+    FARZ_NAMOZLAR().forEach(n=>{n.time=addMinutesToTime(DEFAULT_NAMOZ_TIMES[n.key],ST.settings.offsets?.[n.key]||0);});
+    prayerTimeCache[cacheKey]=NAMOZLAR.map(n=>({...n}));
+    return prayerTimeCache[cacheKey];
+  }
+}
+
+// ============================================================
+// REAL HIJRI (AlAdhan API)
+// ============================================================
+let hijriCache={};
+async function getHijri(dateKey){
+  if(hijriCache[dateKey])return hijriCache[dateKey];
+  try{
+    const d=parseKey(dateKey);
+    const url=`https://api.aladhan.com/v1/gToH/${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`;
+    const r=await fetch(url);const j=await r.json();
+    if(j.code===200){
+      const h=j.data.hijri;
+      const months=['Muharram','Safar',"Rabi' ul-avval","Rabi' ul-oxir","Jumad ul-avval","Jumad ul-oxir","Rajab","Sha'bon","Ramazon","Shavvol","Zul-qa'da","Zul-hijja"];
+      const result=`${h.day} ${months[parseInt(h.month.number)-1]} ${h.year} H`;
+      hijriCache[dateKey]=result;
+      return result;
+    }
+  }catch{}
+  // Fallback — mahalliy formula
+  return toHijriLocal(parseKey(dateKey));
+}
+function toHijriLocal(date){
+  const jd=Math.floor((date/86400000)+2440587.5);
+  let l=jd+68569,n=Math.floor(4*l/146097);
+  l=l-Math.floor((146097*n+3)/4);let i=Math.floor(4000*(l+1)/1461001);
+  l=l-Math.floor(1461*i/4)+31;let j=Math.floor(80*l/2447);
+  let day=l-Math.floor(2447*j/80);l=Math.floor(j/11);
+  let month=j+2-12*l,year=100*(n-49)+i+l;
+  const HM=['Muharram','Safar',"Rabi' ul-avval","Rabi' ul-oxir","Jumad ul-avval","Jumad ul-oxir","Rajab","Sha'bon","Ramazon","Shavvol","Zul-qa'da","Zul-hijja"];
+  return`${day} ${HM[month-1]} ${year} H`;
+}
+
+// SKY
+function updateSky(){
+  const h=new Date().getHours();const sky=document.getElementById('skyBg');
+  let g;
+  if(h>=2&&h<4)g='linear-gradient(180deg,#050818,#0a0f25)';
+  else if(h>=4&&h<6)g='linear-gradient(180deg,#1a0a2e,#8b4513)';
+  else if(h>=6&&h<8)g='linear-gradient(180deg,#ff6b35,#87ceeb)';
+  else if(h>=8&&h<17)g='linear-gradient(180deg,#1a3a6e,#87ceeb)';
+  else if(h>=17&&h<19)g='linear-gradient(180deg,#0d1f45,#c2601a)';
+  else if(h>=19&&h<21)g='linear-gradient(180deg,#0a0f20,#2d1b4e)';
+  else g='linear-gradient(180deg,#020408,#050818)';
+  sky.style.background=g;
+}
+updateSky();setInterval(updateSky,60000);
+
+// COUNTDOWN
+function updateCountdown(){
+  const now=new Date();const cur=`${z2(now.getHours())}:${z2(now.getMinutes())}`;
+  let ni=-1;
+  const nextList=VISIBLE_NAMOZLAR();
+  for(let i=0;i<nextList.length;i++){if(nextList[i].time>cur){ni=i;break;}}
+  if(ni===-1)ni=0;
+  const next=nextList[ni];
+  document.getElementById('cdName').textContent=next.name;
+  const[nh,nm]=next.time.split(':').map(Number);
+  let diff=(nh*60+nm)-(now.getHours()*60+now.getMinutes());
+  if(diff<0)diff+=24*60;
+  document.getElementById('cdTime').textContent=`${z2(Math.floor(diff/60))}:${z2(diff%60)}:${z2(59-now.getSeconds())}`;
+}
+setInterval(updateCountdown,1000);updateCountdown();
+
+// KUNLIK HADIS
+function renderDailyCard(){
+  const dayOfYear=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
+  const h=HADISLAR[dayOfYear%HADISLAR.length];
+  document.getElementById('dailyText').textContent=`"${h.text}"`;
+  document.getElementById('dailySrc').textContent=`— ${h.src}`;
+}
+
+// TABS
+function switchTab(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  const pg=document.getElementById('pg-'+name);
+  const tb=document.getElementById('tab-'+name);
+  if(pg)pg.classList.add('active');
+  if(tb)tb.classList.add('active');
+  if(name==='stat')renderStat();
+  if(name==='zikr')renderZikr();
+  if(name==='qibla')renderVaqt();
+  if(name==='soz')renderSoz();
+}
+
+// ============================================================
+// NAMOZ
+// ============================================================
+async function renderNamoz(){
+  await loadPrayerTimes(curDate);
+  const d=parseKey(curDate);const today=todayKey();const isToday=curDate===today;
+  document.getElementById('hdrDate').textContent=`${d.getDate()} ${MONTHS_UZ[d.getMonth()]} ${d.getFullYear()}`;
+  // Real hijri
+  document.getElementById('hdrHijri').textContent='⏳';
+  getHijri(curDate).then(h=>document.getElementById('hdrHijri').textContent=h);
+  document.getElementById('jumaWrap').innerHTML=d.getDay()===5?'<div class="juma-badge">🕌 JUMA MUBORAK</div>':'';
+  document.getElementById('navWd').textContent=DAYS_UZ[d.getDay()];
+  document.getElementById('navFd').textContent=`${d.getDate()} ${MONTHS_UZ[d.getMonth()]}`;
+  document.getElementById('todayBtn').style.display=isToday?'none':'block';
+  // profiles
+  const pb=document.getElementById('profileBar');pb.innerHTML='';
+  ST.profiles.forEach(p=>{
+    const btn=document.createElement('div');btn.className='profile-btn'+(p.id===curProfile?' active':'');
+    btn.innerHTML=`${escapeHTML(p.emoji)} ${escapeHTML(p.name)}`;btn.onclick=()=>{curProfile=p.id;renderNamoz();};pb.appendChild(btn);
+  });
+  // namoz cards
+  const day=getPD(curProfile,curDate);
+  const list=document.getElementById('namozList');list.innerHTML='';
+  VISIBLE_NAMOZLAR().forEach(n=>{
+    const s=day[n.key];
+    const card=document.createElement('div');card.className='ncard'+(s==='done'?' done':s==='missed'?' missed':'');
+    let chk='';if(s==='done')chk='✓';else if(s==='missed')chk='✕';
+    card.innerHTML=`<div class="ncard-bar"></div><div class="ncard-icon">${n.icon}</div>
+      <div class="ncard-info"><div class="ncard-name">${n.name}</div><div class="ncard-time">${n.time}</div></div>
+      <div class="ncard-chk-ui">${chk}</div>`;
+    card.onclick=()=>toggleNamoz(n.key);list.appendChild(card);
+  });
+  // ring
+  const done=farzDoneCount(day),target=farzTarget();
+  const off=188.5-(done/target)*188.5;
+  const rc=document.getElementById('ringC');
+  rc.style.strokeDashoffset=off;
+  rc.style.stroke=done===target?'#22c55e':done>=4?'var(--acc)':done>0?'#d4a843':'var(--acc)';
+  document.getElementById('ringLbl').textContent=`${done}/${target}`;
+  document.getElementById('ringTitle').textContent=done===target?'🎉 Farzlar ado!':isToday?'Bugungi farz namozlar':`${d.getDate()}-${MONTHS_UZ[d.getMonth()]}`;
+  document.getElementById('ringSub').textContent=done===target?'Barakallo!':done===0?'Bosing — belgilang':`${done} ta o'qildi, ${target-done} ta qoldi`;
+  document.getElementById('stDone').textContent=done;
+  document.getElementById('stStreak').textContent=calcStreak();
+  document.getElementById('stQaza').textContent=calcQaza().total;
+  const reja=getReja(curDate);
+  document.getElementById('rejaMaqsad').textContent=reja.maqsad;
+  document.getElementById('rejaOqildi').textContent=reja.oqildi;
+  const pct=reja.maqsad>0?Math.min(100,Math.round(reja.oqildi/reja.maqsad*100)):0;
+  document.getElementById('rejaBar').style.width=pct+'%';
+  document.getElementById('rejaInfo').textContent=reja.maqsad===0?'Maqsad qo\'ying':reja.oqildi>=reja.maqsad?'✅ Bajarildi!':`${reja.oqildi}/${reja.maqsad} — ${pct}%`;
+  renderWeek();
+  const qaza=calcQaza();const qsec=document.getElementById('qazaSec');
+  if(qaza.total>0){
+    qsec.innerHTML=`<div class="sec-title">⚠ Qazolar</div><div class="qaza-card" id="qr"></div>`;
+    const qr=document.getElementById('qr');qr.innerHTML=`<div class="qaza-hdr">Jami: ${qaza.total} ta</div>`;
+    FARZ_NAMOZLAR().forEach(n=>{if(qaza.by[n.key]>0)qr.innerHTML+=`<div class="qaza-row"><span>${n.icon} ${n.name}</span><span class="qaza-badge">${qaza.by[n.key]} ta</span></div>`;});
+  }else qsec.innerHTML='';
+  enhanceAccessibility();
+}
+
+function toggleNamoz(key){
+  const day=getPD(curProfile,curDate);const s=day[key];
+  if(!s){day[key]='done';showToast('✅ O\'qildi');if(navigator.vibrate)navigator.vibrate(40);}
+  else if(s==='done'){day[key]='missed';showToast('❌ O\'qilmadi');}
+  else{day[key]=null;showToast('⬜ Tozalandi');}
+  saveST();
+  const done=farzDoneCount(getPD(curProfile,curDate));
+  if(done===farzTarget())konfetti();
+  renderNamoz();
+  // Notification
+  scheduleNextNotif();
+}
+
+function calcQaza(){
+  const today=todayKey();const by={};FARZ_NAMOZLAR().forEach(n=>by[n.key]=0);
+  const pd=ST.data[curProfile]||{};
+  Object.keys(pd).sort().forEach(k=>{
+    if(k>=today)return;
+    FARZ_NAMOZLAR().forEach(n=>{if(pd[k][n.key]==='missed')by[n.key]++;});
+  });
+  return{total:Object.values(by).reduce((a,b)=>a+b,0),by};
+}
+function calcStreak(){
+  const pd=ST.data[curProfile]||{};let s=0;const d=new Date();
+  for(let i=0;i<365;i++){const k=fmt(d);const day=pd[k]||{};if(farzDoneCount(day)===farzTarget())s++;else if(i>0)break;d.setDate(d.getDate()-1);}
+  return s;
+}
+function calcBestStreak(){
+  const pd=ST.data[curProfile]||{};const keys=Object.keys(pd).sort();let best=0,cur=0;
+  keys.forEach(k=>{if(farzDoneCount(pd[k])===farzTarget()){cur++;best=Math.max(best,cur);}else cur=0;});return best;
+}
+function dayStatus(k){
+  const pd=ST.data[curProfile]||{};const day=pd[k];if(!day)return'empty';
+  const done=farzDoneCount(day);const miss=farzMissCount(day);
+  if(done+miss===0)return'empty';if(done===farzTarget())return'all-done';if(miss===farzTarget())return'all-miss';return'partial';
+}
+function renderWeek(){
+  const row=document.getElementById('weekRow');row.innerHTML='';
+  const cur=parseKey(curDate);const dow=(cur.getDay()+6)%7;const mon=new Date(cur);mon.setDate(cur.getDate()-dow);
+  for(let i=0;i<7;i++){
+    const dd=new Date(mon);dd.setDate(mon.getDate()+i);const k=fmt(dd);
+    const isCur=k===curDate;const isFut=k>todayKey();const st=dayStatus(k);
+    const div=document.createElement('div');div.className='wday'+(isCur?' cur':'')+(!isCur&&st!=='empty'?' '+st:'');
+    const pd=ST.data[curProfile]||{};const day=pd[k]||{};
+    const dots=FARZ_NAMOZLAR().map(n=>`<div class="wdot${day[n.key]==='done'?' d':day[n.key]==='missed'?' m':''}"></div>`).join('');
+    div.innerHTML=`<div class="wday-lbl">${DAYS_S[dd.getDay()]}</div><div class="wday-num">${dd.getDate()}</div><div class="wdots">${dots}</div>`;
+    if(!isFut||isCur)div.onclick=()=>{curDate=k;renderNamoz();};else div.style.opacity='.35';
+    row.appendChild(div);
+  }
+}
+function chReja(d){const r=getReja(curDate);r.maqsad=Math.max(0,r.maqsad+d);saveST();renderNamoz();}
+function chRejaO(d){const r=getReja(curDate);r.oqildi=Math.max(0,r.oqildi+d);saveST();renderNamoz();}
+document.getElementById('prevBtn').onclick=()=>{const d=parseKey(curDate);d.setDate(d.getDate()-1);curDate=fmt(d);renderNamoz();};
+document.getElementById('nextBtn').onclick=()=>{const d=parseKey(curDate);const nx=new Date(d);nx.setDate(d.getDate()+1);if(fmt(nx)<=todayKey()){curDate=fmt(nx);renderNamoz();}else showToast('⚠ Kelajak kuni belgilanmaydi');};
+document.getElementById('todayBtn').onclick=()=>{curDate=todayKey();renderNamoz();};
+
+// ============================================================
+// STATISTIKA
+// ============================================================
+function renderStat(){
+  const now=new Date();
+  document.getElementById('statMonthLbl').textContent=`${MONTHS_UZ[now.getMonth()]} ${now.getFullYear()}`;
+  const streak=calcStreak(),best=calcBestStreak();
+  document.getElementById('streakNum').textContent=streak;
+  document.getElementById('streakBest').textContent=`Eng yaxshi: ${best} kun`;
+  renderHisobot();
+  // Challenge
+  const pd=ST.data[curProfile]||{};
+  const cur2=parseKey(curDate);const dow=(cur2.getDay()+6)%7;const mon=new Date(cur2);mon.setDate(cur2.getDate()-dow);
+  let winDays=0;const chDays=document.getElementById('chDays');chDays.innerHTML='';
+  for(let i=0;i<7;i++){
+    const dd=new Date(mon);dd.setDate(mon.getDate()+i);const k=fmt(dd);
+    const isFut=k>todayKey();const isT=k===todayKey();
+    const day=pd[k]||{};const done=farzDoneCount(day);
+    if(done===farzTarget()&&!isFut)winDays++;
+    const el=document.createElement('div');el.className='ch-day'+(done===farzTarget()&&!isFut?' win':!isFut&&Object.keys(day).length>0?' fail':'')+(isT?' tod':'');
+    el.textContent=dd.getDate();chDays.appendChild(el);
+  }
+  document.getElementById('chProgress').textContent=`${winDays}/7`;
+  document.getElementById('chBarFill').style.width=`${Math.round(winDays/7*100)}%`;
+  // Haftalik taqqoslash
+  renderCompare();
+  // Chart
+  const bars=document.getElementById('chartBars');bars.innerHTML='';
+  for(let i=6;i>=0;i--){
+    const dd=new Date();dd.setDate(dd.getDate()-i);const k=fmt(dd);const day=pd[k]||{};
+    const done=farzDoneCount(day),target=farzTarget();
+    const col=done===target?'#22c55e':done>=4?'var(--acc)':done>0?'#d4a843':'#ef444430';
+    const c=document.createElement('div');c.className='cbar-col';
+    c.innerHTML=`<div class="cbar-val">${done}</div><div class="cbar" style="height:${Math.max(Math.round(done/target*100),4)}%;background:${col}"></div><div class="cbar-lbl">${DAYS_S[dd.getDay()]}</div>`;
+    bars.appendChild(c);
+  }
+  // Miss stat
+  const ms=document.getElementById('missStat');ms.innerHTML='';
+  const qaza=calcQaza();const maxQ=Math.max(...NAMOZLAR.map(n=>qaza.by[n.key]||0),1);
+  FARZ_NAMOZLAR().forEach(n=>{
+    const cnt=qaza.by[n.key]||0;const r=document.createElement('div');r.className='miss-row';
+    r.innerHTML=`<div style="font-size:20px;width:30px;text-align:center">${n.icon}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${n.name}</div><div class="miss-bar-wrap"><div class="miss-bar" style="width:${Math.round(cnt/maxQ*100)}%"></div></div></div><div style="font-size:13px;font-weight:700;color:var(--miss)">${cnt}</div>`;
+    ms.appendChild(r);
+  });
+  renderHeatmap();renderCal();
+  const qd=document.getElementById('qazaDetail');
+  if(qaza.total>0){qd.innerHTML=`<div class="qaza-hdr">Jami ${qaza.total} ta qaza</div>`;FARZ_NAMOZLAR().forEach(n=>{if(qaza.by[n.key]>0)qd.innerHTML+=`<div class="qaza-row"><span>${n.icon} ${n.name}</span><span class="qaza-badge">${qaza.by[n.key]} ta</span></div>`;});}
+  else qd.innerHTML=`<div class="qaza-hdr" style="color:var(--done)">✅ Qazolar yo'q!</div>`;
+  renderAch();
+  enhanceAccessibility();
+}
+
+function renderCompare(){
+  const pd=ST.data[curProfile]||{};
+  const getWeekTotal=(offset)=>{
+    const now=new Date();const cur=new Date(now);cur.setDate(now.getDate()-offset*7);
+    const dow=(cur.getDay()+6)%7;const mon=new Date(cur);mon.setDate(cur.getDate()-dow);
+    let total=0;
+    for(let i=0;i<7;i++){const dd=new Date(mon);dd.setDate(mon.getDate()+i);const k=fmt(dd);const day=pd[k]||{};total+=farzDoneCount(day);}
+    return total;
+  };
+  const thisW=getWeekTotal(0),lastW=getWeekTotal(1),twoW=getWeekTotal(2);
+  const maxV=Math.max(thisW,lastW,twoW,1);
+  const card=document.getElementById('compareCard');
+  const rows=[
+    {lbl:'Bu hafta',val:thisW,col:'var(--acc)'},
+    {lbl:'O\'tgan hafta',val:lastW,col:'var(--gold)'},
+    {lbl:'2 hafta oldin',val:twoW,col:'var(--t3)'},
+  ];
+  card.innerHTML=rows.map(r=>`
+    <div class="compare-row">
+      <div class="compare-lbl">${r.lbl}</div>
+      <div class="compare-bar-wrap"><div class="compare-bar" style="width:${Math.round(r.val/maxV*100)}%;background:${r.col}"></div></div>
+      <div class="compare-val" style="color:${r.col}">${r.val}</div>
+    </div>`).join('');
+  const trend=thisW>lastW?'📈 O\'sish bor!':thisW<lastW?'📉 Kamaydi':' = Bir xil';
+  card.innerHTML+=`<div style="font-size:12px;color:var(--t3);margin-top:8px;text-align:center">${trend}</div>`;
+}
+
+function renderHisobot(){
+  const now=new Date();const pd=ST.data[curProfile]||{};
+  let tp=0,td=0,tm=0;
+  for(let d=1;d<=now.getDate();d++){const k=`${now.getFullYear()}-${z2(now.getMonth()+1)}-${z2(d)}`;const day=pd[k]||{};FARZ_NAMOZLAR().forEach(n=>{tp++;if(day[n.key]==='done')td++;else if(day[n.key]==='missed')tm++;});}
+  const pct=tp>0?Math.round(td/tp*100):0;
+  let cls='low',baho='Harakat qiling 💪';
+  if(pct>=95){cls='excellent';baho='Ajoyib! MashaAllah! 🌟';}else if(pct>=80){cls='good';baho='Yaxshi! Davom eting 👍';}else if(pct>=60){cls='medium';baho='O\'rtacha. Kuchaytiring ☝️';}
+  document.getElementById('hisobotCard').innerHTML=`<div class="hisobot-pct ${cls}">${pct}%</div><div style="font-size:13px;color:var(--t2);margin-top:4px">${MONTHS_UZ[now.getMonth()]} — namoz faolligi</div><div style="font-size:16px;font-weight:700;margin-top:8px">${baho}</div><div class="hbox-grid"><div class="hbox"><div class="hbox-num" style="color:var(--done)">${td}</div><div class="hbox-lbl">O'qildi</div></div><div class="hbox"><div class="hbox-num" style="color:var(--miss)">${tm}</div><div class="hbox-lbl">O'qilmadi</div></div><div class="hbox"><div class="hbox-num" style="color:var(--gold)">${now.getDate()}</div><div class="hbox-lbl">Kun o'tdi</div></div></div>`;
+}
+function renderHeatmap(){
+  const hm=document.getElementById('heatmap');hm.innerHTML='';
+  const pd=ST.data[curProfile]||{};const now=new Date();const start=new Date(now);start.setDate(start.getDate()-364);
+  while((start.getDay()+6)%7!==0)start.setDate(start.getDate()-1);
+  const d=new Date(start);
+  while(d<=now){
+    const k=fmt(d);const isFut=k>todayKey();const day=pd[k]||{};
+    const done=isFut?-1:farzDoneCount(day);const miss=farzMissCount(day);
+    const cell=document.createElement('div');cell.className='hm-cell'+(isFut?'':done===0&&miss>0?' miss':done===0?'':done<=2?' l1':done<=4?' l2':done<=5?' l3':' l4');
+    hm.appendChild(cell);d.setDate(d.getDate()+1);
+  }
+}
+function renderCal(){
+  const now=new Date();if(calY===undefined){calY=now.getFullYear();calM=now.getMonth();}
+  document.getElementById('calMonthLbl').textContent=`${MONTHS_UZ[calM]} ${calY}`;
+  const head=document.getElementById('calHead');head.innerHTML=DAYS_S.map(d=>`<div class="cal-head">${d}</div>`).join('');
+  const body=document.getElementById('calBody');body.innerHTML='';
+  const first=new Date(calY,calM,1);const startDow=(first.getDay()+6)%7;const days=new Date(calY,calM+1,0).getDate();const today=todayKey();
+  for(let i=0;i<startDow;i++){const e=document.createElement('div');e.className='cal-day empty';body.appendChild(e);}
+  for(let d=1;d<=days;d++){
+    const k=`${calY}-${z2(calM+1)}-${z2(d)}`;const st=dayStatus(k);const isT=k===today;const isC=k===curDate;const isF=k>today;
+    const el=document.createElement('div');let cls='cal-day';
+    if(isC)cls+=' cur';else if(isT)cls+=' today';else if(!isF&&st!=='empty')cls+=' '+st;
+    el.className=cls;el.innerHTML=`${d}<div class="cal-dot"></div>`;
+    if(!isF){el.onclick=()=>{curDate=k;switchTab('namoz');renderNamoz();};}
+    body.appendChild(el);
+  }
+}
+document.getElementById('calPrev').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCal();};
+document.getElementById('calNext').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCal();};
+function renderAch(){
+  const s=calcStreak();const totalQ=Object.values(ST.quran[curProfile]||{}).reduce((a,b)=>a+b,0);
+  let totalZ=0;try{Object.values(ST.zikr[curProfile]||{}).forEach(dz=>Object.values(dz).forEach(v=>totalZ+=v));}catch{}
+  const qaza=calcQaza();const grid=document.getElementById('achGrid');grid.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    let earned=false;try{earned=a.req(s,totalQ,totalZ,qaza.total);}catch{}
+    const el=document.createElement('div');el.className='ach-item'+(earned?' earned':'');
+    el.innerHTML=`<div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div>`;grid.appendChild(el);
+  });
+}
+
+// ============================================================
+// ZIKR
+// ============================================================
+function renderZikr(){
+  const today=todayKey();
+  document.getElementById('zikrDate').textContent=`${new Date().getDate()} ${MONTHS_UZ[new Date().getMonth()]}`;
+  renderTasbeh();
+  const qp=getQP(curProfile,today);
+  document.getElementById('quranToday').textContent=qp;
+  const total=Object.values(ST.quran[curProfile]||{}).reduce((a,b)=>a+b,0);
+  document.getElementById('quranTotal').textContent=total+' sahifa';
+  document.getElementById('quranXatm').textContent=Math.floor(total/604);
+  renderDuo();renderDiary();
+  enhanceAccessibility();
+}
+function renderTasbeh(){
+  const sel=document.getElementById('tasbehSelector');sel.innerHTML='';
+  TASBEHLAR.forEach((t,i)=>{const btn=document.createElement('div');btn.className='tasbeh-sel-btn'+(i===curTasbeh?' active':'');btn.textContent=t.name;btn.onclick=()=>{curTasbeh=i;renderTasbeh();};sel.appendChild(btn);});
+  const t=TASBEHLAR[curTasbeh];const cnt=ST.tasbeh[t.key]||0;const done=cnt>=t.target;
+  document.getElementById('tasbehCount').textContent=cnt;
+  document.getElementById('tasbehName').textContent=t.name+(done?' ✅':'');
+  document.getElementById('tasbehArabic').textContent=t.arabic;
+  document.getElementById('tasbehTargetLbl').textContent=`Maqsad: ${t.target} marta`;
+  const pct=Math.min(100,Math.round(cnt/t.target*100));
+  document.getElementById('tasbehProgFill').style.width=pct+'%';
+  let tot=0;TASBEHLAR.forEach(tt=>tot+=ST.tasbeh[tt.key]||0);
+  document.getElementById('tasbehTotalLbl').textContent=`Bugun jami: ${tot} ta zikr`;
+}
+function tasbehTap(){
+  const t=TASBEHLAR[curTasbeh];ST.tasbeh[t.key]=(ST.tasbeh[t.key]||0)+1;saveST();
+  if(navigator.vibrate)navigator.vibrate(20);
+  const cnt=document.getElementById('tasbehCount');cnt.classList.add('pulse');setTimeout(()=>cnt.classList.remove('pulse'),80);
+  if(ST.tasbeh[t.key]===t.target){showToast('✅ '+t.name+'! MashaAllah!');konfetti();}
+  renderTasbeh();
+}
+function tasbehReset(){const t=TASBEHLAR[curTasbeh];ST.tasbeh[t.key]=0;saveST();renderTasbeh();showToast('↺ Nolga');}
+function tasbehNext(){curTasbeh=(curTasbeh+1)%TASBEHLAR.length;renderTasbeh();}
+function chZikr(key,d){const zd=getZD(curProfile,todayKey());zd[key]=Math.max(0,(zd[key]||0)+d);saveST();renderZikr();}
+function chQ(d){const today=todayKey();if(!ST.quran[curProfile])ST.quran[curProfile]={};ST.quran[curProfile][today]=Math.max(0,(ST.quran[curProfile][today]||0)+d);saveST();renderZikr();}
+
+// DUO render with category filter + search
+function renderDuo(){
+  const search=(document.getElementById('duoSearch')?.value||'').toLowerCase();
+  // Category tabs
+  const cats=['Barchasi',...new Set(DUOLAR.map(d=>d.cat))];
+  const tabsEl=document.getElementById('catTabs');
+  if(tabsEl.children.length===0){
+    cats.forEach(c=>{
+      const btn=document.createElement('div');btn.className='cat-tab'+(c===curDuoCat?' active':'');
+      btn.textContent=c;btn.onclick=()=>{curDuoCat=c;document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderDuo();};
+      tabsEl.appendChild(btn);
+    });
+  }
+  const filtered=DUOLAR.filter(d=>{
+    const catOk=curDuoCat==='Barchasi'||d.cat===curDuoCat;
+    const searchOk=!search||d.name.toLowerCase().includes(search)||d.uz.toLowerCase().includes(search)||d.cat.toLowerCase().includes(search);
+    return catOk&&searchOk;
+  });
+  const dl=document.getElementById('duoList');dl.innerHTML='';
+  if(filtered.length===0){dl.innerHTML='<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">Topilmadi</div>';return;}
+  filtered.forEach(duo=>{
+    const item=document.createElement('div');item.className='duo-item';
+    item.innerHTML=`<div class="duo-header"><div class="duo-icon">${duo.icon}</div><div class="duo-name">${duo.name}</div><div class="duo-cat-badge">${duo.cat}</div><div class="duo-arr">›</div></div>
+      <div class="duo-body"><div class="duo-arabic">${duo.arabic}</div><div class="duo-uz">${duo.uz}</div><div class="duo-source">— ${duo.src}</div></div>`;
+    item.querySelector('.duo-header').onclick=()=>item.classList.toggle('expanded');
+    dl.appendChild(item);
+  });
+}
+function addDiary(){openModal('Bugungi eslatma','',null,'textarea');}
+function renderDiary(){
+  const dl=document.getElementById('diaryList');dl.innerHTML='';
+  const entries=Object.entries(ST.diary[curProfile]||{}).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,8);
+  if(entries.length===0){dl.innerHTML='<div class="diary-empty">📝 Hali eslatma yozilmagan</div>';return;}
+  entries.forEach(([k,txt])=>{const d=parseKey(k);const el=document.createElement('div');el.className='diary-entry';el.innerHTML=`<div class="diary-date">${d.getDate()} ${MONTHS_UZ[d.getMonth()]} ${d.getFullYear()}</div><div style="font-size:14px;line-height:1.5">${escapeHTML(txt)}</div>`;dl.appendChild(el);});
+}
+
+// ============================================================
+// AI DUO - Aqlli mahalliy qidiruv + Gemini AI fallback
+// ============================================================
+function saveGeminiKey(){
+  const key=document.getElementById('geminiKeyInput').value.trim();
+  ST.settings.geminiKey=key;saveST();
+  document.getElementById('geminiStatus').textContent=key?'✅ Kalit saqlandi':'Kalit kiritilmagan';
+}
+
+// Kesh — bir xil so’rovni qayta yubormaslik
+const aiCache={};
+
+// Qur'on oyatlari — holatlarga ko'ra indexed (surah:ayah)
+const QURAN_DUAS_MAP=[
+  {keys:['qiyin','erin','dangasa','azob','g\'am','tashvish','xavotir','cho\'ch','qo\'rq','kuyun','yig\'la','mushkul','muammo','alam','balo','iztiror'],refs:[{s:2,a:286},{s:94,a:5},{s:2,a:155},{s:65,a:3}],label:'Qiyinchilik va sabr'},
+  {keys:['namoz','ibodat','sajda','ruku','farz','o\'qi','o\'qishga','o\'qishni'],refs:[{s:2,a:238},{s:14,a:40},{s:20,a:14},{s:17,a:79}],label:'Namoz va ibodat'},
+  {keys:['safar','yo\'l','ketya','boraman','mashina','uchish','parvoz','sapar'],refs:[{s:43,a:13},{s:43,a:14},{s:27,a:62}],label:'Safar vaqtida'},
+  {keys:['kasal','kasallik','dard','og\'riq','shif','betob','shifo','mariz','tuzal'],refs:[{s:21,a:83},{s:26,a:80},{s:10,a:57}],label:'Kasallikda shifo'},
+  {keys:['ilm','o\'qish','imtihon','talaba','bilim','maktab','sinov','hafiza'],refs:[{s:20,a:114},{s:20,a:25},{s:3,a:8}],label:'Ilm talabida'},
+  {keys:['pul','rizq','qarz','mol','boy','kambag\'al','berma','topam','daromad','ish','ixtiyor'],refs:[{s:65,a:3},{s:11,a:6},{s:51,a:58}],label:'Rizq va baraka'},
+  {keys:['oila','farzand','bola','ota','ona','nikoh','er','xotin','turmush','qarindosh'],refs:[{s:3,a:38},{s:25,a:74},{s:14,a:41}],label:'Oila va farzand'},
+  {keys:['gunoh','tavba','tawba','kechirim','pushaymon','afsus','aybdor','istig\'for'],refs:[{s:3,a:135},{s:39,a:53},{s:2,a:286}],label:'Tavba va kechirim'},
+  {keys:['shukr','minnat','rahmat','xursand','baxt','sevinch','shodlik'],refs:[{s:14,a:7},{s:93,a:11},{s:55,a:13}],label:'Shukr va hamd'},
+  {keys:['uyqu','uxla','kecha','tun','yarim','bedor','tush'],refs:[{s:17,a:79},{s:32,a:16},{s:3,a:17}],label:'Kechqurun ibodati'},
+  {keys:['o\'lim','marhum','janoza','qabriston','vafot','azador','dafn'],refs:[{s:2,a:156},{s:36,a:22},{s:23,a:118}],label:'Vafot va marhumlar'},
+  {keys:['g\'azab','jahli','achchiq','urish','janjal','ranjib','rozi'],refs:[{s:3,a:134},{s:41,a:34}],label:'G\'azab va sabr'},
+  {keys:['yolg\'iz','tanho','do\'st','mahrum','kimsa'],refs:[{s:93,a:3},{s:94,a:1},{s:2,a:186}],label:'Yolg\'izlik va umid'},
+  {keys:['tong','bomdod','erta','sah','yangi kun'],refs:[{s:113,a:1},{s:6,a:63},{s:25,a:47}],label:'Tong duosi'},
+  {keys:['qibla','makka','madina','haj','umra','iboda'],refs:[{s:2,a:144},{s:22,a:27}],label:'Muqaddas ziyorat'},
+  {keys:['ro\'za','ramazon','sahur','iftor','oraz'],refs:[{s:2,a:183},{s:2,a:185},{s:97,a:1}],label:'Ro\'za va Ramazon'},
+];
+
+// Holatdan mos Qur'on oyatlarini topish
+function matchQuranRefs(query){
+  const q=query.toLowerCase();
+  const words=q.split(/[\s,!?.]+/).filter(w=>w.length>1);
+  const found=[];
+  let label='Umumiy duo\'lar';
+  let matched=false;
+  QURAN_DUAS_MAP.forEach(entry=>{
+    const score=entry.keys.reduce((sum,kw)=>{
+      return sum+words.reduce((s,w)=>{
+        const minLen=Math.min(kw.length,w.length);
+        const mLen=Math.max(3,Math.floor(minLen*0.75));
+        if(w===kw||w.includes(kw)||kw.includes(w)||(mLen>=3&&w.slice(0,mLen)===kw.slice(0,mLen)))return s+1;
+        return s;
+      },0);
+    },0);
+    if(score>0){
+      found.push({refs:entry.refs,label:entry.label,score});
+      matched=true;
+    }
+  });
+  if(!matched)return{refs:[{s:2,a:286},{s:23,a:118},{s:2,a:201}],label:'Umumiy duo\'lar'};
+  found.sort((a,b)=>b.score-a.score);
+  const topRefs=[];
+  const seen=new Set();
+  found.slice(0,2).forEach(e=>e.refs.forEach(r=>{
+    const k=`${r.s}:${r.a}`;
+    if(!seen.has(k)){seen.add(k);topRefs.push(r);}
+  }));
+  return{refs:topRefs.slice(0,3),label:found[0].label};
+}
+
+// Qur'on oyatlaridan qidirish (Al-Quran Cloud API - bepul)
+async function searchFromInternet(){
+  const input=document.getElementById('aiInput').value.trim();
+  if(!input){showToast('\u26a0 Avval holatni yozing');return;}
+  const res=document.getElementById('aiResult');
+  const lbl=document.getElementById('aiModeLabel');
+  const btn=document.getElementById('onlineBtn');
+  if(btn){btn.disabled=true;btn.textContent='\u23f3';}
+  res.innerHTML=`<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:6px">Qur'on oyatlari qidirilmoqda...</span></div>`;
+  if(lbl)lbl.textContent='';
+  const {refs,label}=matchQuranRefs(input);
+  try{
+    const results=await Promise.all(refs.map(ref=>
+      fetch(`https://api.alquran.cloud/v1/ayah/${ref.s}:${ref.a}/editions/quran-simple,uz.sodik`,{signal:AbortSignal.timeout(10000)})
+        .then(r=>r.json()).catch(()=>null)
+    ));
+    let html='';
+    let count=0;
+    results.forEach((data,i)=>{
+      if(!data||data.code!==200)return;
+      const eds=Array.isArray(data.data)?data.data:[];
+      const arabic=eds.find(e=>e.edition?.identifier==='quran-simple');
+      const uzbek=eds.find(e=>e.edition?.identifier==='uz.sodik');
+      if(!arabic||!uzbek)return;
+      html+=`
+        <div style="${count>0?'border-top:1px solid var(--b1);margin-top:14px;padding-top:14px':''}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:18px">📖</span>
+            <span style="font-size:13px;font-weight:700;color:var(--acc)">${escapeHTML(uzbek.surah?.name||uzbek.surah?.englishName||'Qur\'on')}</span>
+            <span style="font-size:11px;background:var(--s2);padding:2px 8px;border-radius:20px;color:var(--gold)">${arabic.surah?.number||refs[i]?.s}:${arabic.numberInSurah||refs[i]?.a}</span>
+          </div>
+          <div class="ai-result-arabic">${escapeHTML(arabic.text)}</div>
+          <div class="ai-result-text">${escapeHTML(uzbek.text)}</div>
+          <div style="font-size:11px;color:var(--gold);margin-top:4px">— Qur'on Karim</div>
+        </div>`;
+      count++;
+    });
+    if(html){
+      if(lbl)lbl.textContent=`📖 Qur'on · ${label} · ${count} ta oyat`;
+      res.innerHTML=`<div style="font-size:11px;color:var(--acc);font-weight:600;margin-bottom:10px">📖 ${escapeHTML(label)} — Qur'on oyatlari:</div>`+html;
+    }else{
+      throw new Error('no_data');
+    }
+  }catch(e){
+    if(lbl)lbl.textContent='❌ Internet xatosi';
+    res.innerHTML=`<div style="text-align:center;padding:12px"><div style="font-size:28px">📵</div><div style="font-size:13px;color:var(--t2);margin-top:8px">Internet bilan ulanib bo'lmadi</div><div style="font-size:12px;color:var(--t3);margin-top:4px">Wi-Fi yoki mobil internet tekshiring</div></div>`;
+  }
+  if(btn){btn.disabled=false;btn.textContent='📖 Qur\'on oyati';}
+}
+
+// Hadis qidirish (bepul CDN API)
+async function searchHadith(){
+  const input=document.getElementById('aiInput').value.trim();
+  if(!input){showToast('\u26a0 Avval holatni yozing');return;}
+  const res=document.getElementById('aiResult');
+  const lbl=document.getElementById('aiModeLabel');
+  const btn=document.getElementById('hadithBtn');
+  if(btn){btn.disabled=true;btn.textContent='\u23f3';}
+  res.innerHTML=`<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:6px">Hadislar qidirilmoqda...</span></div>`;
+  if(lbl)lbl.textContent='';
+  // Hadis kitoblaridan random hadis (Riyazus Solihin O'zbek tarjimasi)
+  const {refs,label}=matchQuranRefs(input);
+  // Hadis raqamlarini holatga qarab tanlash
+  const HADITH_MAP=[
+    {keys:['qiyin','azob','sabr','musibat','g\'am'],nums:[1,2,3,4,5]},
+    {keys:['namoz','ibodat','erin'],nums:[183,184,185,186,187]},
+    {keys:['ilm','o\'qish','bilim'],nums:[1388,1389,1390]},
+    {keys:['oila','ota','ona','farzand'],nums:[313,314,315,316]},
+    {keys:['safar','yo\'l'],nums:[1342,1343,1344]},
+    {keys:['gunoh','tavba'],nums:[13,14,15,16]},
+    {keys:['kasal','dard'],nums:[1549,1550,1551]},
+  ];
+  const q=input.toLowerCase();
+  const words=q.split(/\s+/);
+  let hadithNums=[1,2,3];
+  HADITH_MAP.forEach(entry=>{
+    if(entry.keys.some(kw=>words.some(w=>w.includes(kw.slice(0,4))||kw.includes(w.slice(0,4))))){
+      hadithNums=entry.nums.slice(0,3);
+    }
+  });
+  try{
+    // Riyazus Solihin hadislari (fawazahmed0 CDN)
+    const r=await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-riyadussalihin.min.json`,{signal:AbortSignal.timeout(12000)});
+    const data=await r.json();
+    const hadiths=data?.hadiths||[];
+    const selected=hadithNums.map(n=>hadiths.find(h=>h.hadithnumber===n)).filter(Boolean).slice(0,3);
+    if(selected.length===0)throw new Error('no_hadith');
+    if(lbl)lbl.textContent=`📜 Riyazus Solihin · ${label} · ${selected.length} ta hadis`;
+    res.innerHTML=`<div style="font-size:11px;color:var(--gold);font-weight:600;margin-bottom:10px">📜 ${escapeHTML(label)} — Riyazus Solihin hadislari:</div>`+
+      selected.map((h,i)=>`
+        <div style="${i>0?'border-top:1px solid var(--b1);margin-top:14px;padding-top:14px':''}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:18px">📜</span>
+            <span style="font-size:13px;font-weight:700;color:var(--gold)">Hadis #${h.hadithnumber}</span>
+          </div>
+          <div class="ai-result-arabic" style="font-size:15px">${escapeHTML(h.text)}</div>
+          <div style="font-size:11px;color:var(--gold);margin-top:4px">— Riyazus Solihin</div>
+        </div>`).join('');
+  }catch(e){
+    if(lbl)lbl.textContent='❌ Internet xatosi';
+    res.innerHTML=`<div style="text-align:center;padding:12px"><div style="font-size:28px">📵</div><div style="font-size:13px;color:var(--t2);margin-top:8px">Internet bilan ulanib bo'lmadi</div></div>`;
+  }
+  if(btn){btn.disabled=false;btn.textContent='📜 Hadis';}
+}
+
+
+
+// Keng kalit so'zlar xaritasi — o'zbek tilidagi ko'p variant qamralgan
+const AI_KEYWORDS=[
+  // NAMOZ / IBODAT
+  {words:['namoz','namozg','ibodat','erin','dangasa','qalmas','qolaman','qolya','tashla','o\'qima','o\'qiyol','o\'qishga','o\'qishni','farz','rakas','sajda','ruku'],cats:['Namoz','Masjid']},
+  {words:['masjid','jamoat','juma','azon','muazzin'],cats:['Masjid']},
+  {words:['gunoh','istig\'for','tawba','tavba','kechirim','aybdor','xato','noto\'g\'ri','afsus','pushaymon'],cats:['Namoz','Qiyinchilik']},
+  // SAFAR
+  {words:['safar','sapar','yo\'l','yoʻl','uchish','mashina','avtobus','poezd','parvoz','uy','qayt','kelya','ketya','boram','boraman'],cats:['Safar']},
+  // SOG'LIQ
+  {words:['kasal','kasallik','dard','og\'riq','og\'riy','shif','shifo','doktor','shifoxona','hospital','mariz','tuz','tuzal','betob','bedavo','tana'],cats:["Sog'liq"]},
+  // ILM
+  {words:['imtihon','sinov','test','o\'qish','talaba','ilm','maktab','darsl','bilim','universitet','kolej','dars','yod','hafiza','esla'],cats:['Ilm']},
+  // OVQAT
+  {words:['ovqat','taom','osh','non','suv','ich','ye','yema','tushlik','kechki','sahur','iftor','ro\'za'],cats:['Ovqat']},
+  // QIYINCHILIK / G'AM
+  {words:['qiyin','muammo','g\'am','qayg\'u','kuyun','yig\'la','yig\'lay','yig\'laya','hasrat','azob','og\'ir','mushkul','tashvish','xavotir','cho\'ch','qo\'rq','vahm','alam','iztiror','balo','musibat','hazar','bos'],cats:['Qiyinchilik']},
+  {words:['sabr','chida','toq','bardosh','qo\'ymay'],cats:['Qiyinchilik']},
+  {words:['yolg\'iz','tanho','kimsa','hech','do\'st','mahrum','qoldi'],cats:['Qiyinchilik','Oila']},
+  {words:['umid','umidsiz','ko\'mir','xafsala','yo\'qol','yo\'tiri'],cats:['Qiyinchilik']},
+  // RIZQ / MOL
+  {words:['pul','rizq','mol','boylik','kambag\'al','qarz','qarz','bermayman','berish','ish','xizmat','korxona','do\'kon','biznes','daromad','maosh','topish','topaman','topol'],cats:['Rizq']},
+  // OILA
+  {words:['oila','nikoh','uy','er','xotin','turmush','farzand','bola','ota','ona','aka','uka','singil','opa','qarindosh','ota-ona','qarin'],cats:['Oila']},
+  // UYQU / KECHA
+  {words:['uyqu','uyqu','uxla','uxlay','tush','kecha','yarim','tun','late','bedor'],cats:['Kechqurun','Kundalik']},
+  {words:['tong','bomdod','erta','sah','nonushta'],cats:['Kundalik']},
+  // MAXSUS HOLATLAR
+  {words:['yomg\'ir','shamol','momaqald','chaqmoq','bo\'ron'],cats:['Maxsus']},
+  {words:['xursand','shodlik','bayram','tabriklash','baxt','sevinch','to\'y'],cats:['Maxsus']},
+  {words:['uy','kirish','chiqish'],cats:['Maxsus']},
+  {words:['ko\'zgus','kiyim','kiy'],cats:['Kundalik']},
+  {words:['yangi','sotib','oldi'],cats:['Maxsus']},
+  {words:['g\'azab','jahli','achchiq','urish','janjal','munozara'],cats:['Qiyinchilik']},
+  {words:['shukr','minnat','rahmat','noz'],cats:['Maxsus']},
+  {words:['zikr','tasbeh','sub\'han','alhamd','takbir'],cats:['Namoz']},
+  {words:['qibla','makka','madina','haj','umra'],cats:['Masjid','Namoz']},
+  {words:['ramazon','ro\'za','oraz'],cats:['Ovqat','Namoz']},
+  {words:['o\'lim','marhum','janoza','qabriston','vafot','azador'],cats:['Qiyinchilik']},
+  {words:['hayron','ajab','ajab','g\'alati'],cats:['Maxsus']},
+  {words:['aksir','tomog\''],cats:['Maxsus']},
+];
+
+// Mahalliy aqlli qidiruv — so'z-so'z ajratib, qismiga qarab moslashtiradi
+function localDuoSearch(query){
+  const q=query.toLowerCase().trim();
+  // So'zlarni ajratish
+  const words=q.split(/[\s,!?.]+/).filter(w=>w.length>1);
+  const cats=new Set();
+  // Har bir so'z uchun kalit so'zlar bilan solishtirish
+  words.forEach(word=>{
+    AI_KEYWORDS.forEach(entry=>{
+      entry.words.forEach(kw=>{
+        // To'liq moslik YOKI boshqacha boshlash (stem matching)
+        const minLen=Math.min(kw.length,word.length);
+        const matchLen=Math.max(3,Math.floor(minLen*0.7));
+        const stem1=word.slice(0,matchLen);
+        const stem2=kw.slice(0,matchLen);
+        if(
+          word===kw||              // To'liq moslik
+          word.includes(kw)||     // So'z ichida
+          kw.includes(word)||     // Kalit so'z ichida
+          (matchLen>=3&&stem1===stem2) // Ildiz bo'yicha
+        ){
+          entry.cats.forEach(c=>cats.add(c));
+        }
+      });
+    });
+  });
+  // Kategoriya bo'yicha duo
+  let results=[];
+  if(cats.size>0)results=DUOLAR.filter(d=>cats.has(d.cat));
+  // Duo matn ichida qidirish
+  const textMatch=DUOLAR.filter(d=>{
+    return words.some(w=>w.length>2&&(
+      d.name.toLowerCase().includes(w)||
+      d.uz.toLowerCase().includes(w)||
+      d.cat.toLowerCase().includes(w)
+    ));
+  });
+  // Birlashtirish (takrorsiz)
+  const seen=new Set();
+  return [...results,...textMatch].filter(d=>{
+    if(seen.has(d.name))return false;
+    seen.add(d.name);return true;
+  }).slice(0,4);
+}
+
+// Mahalliy natijani chiroyli ko'rsatish
+function showLocalResult(duolar,query){
+  const res=document.getElementById('aiResult');
+  const lbl=document.getElementById('aiModeLabel');
+  if(!duolar||duolar.length===0){
+    // Topilmasa — umumiy tavsiya etiladigan duo'larni ko'rsat
+    const fallback=DUOLAR.filter(d=>['Kundalik','Qiyinchilik','Namoz'].includes(d.cat)).slice(0,3);
+    if(lbl)lbl.textContent=`📚 Umumiy duo'lar (aniq topilmadi)`;
+    if(fallback.length>0){
+      res.innerHTML=`<div style="font-size:12px;color:var(--gold);margin-bottom:10px;text-align:center">⚠️ "${escapeHTML(query)}" uchun aniq natija topilmadi. Umumiy duo'lar:</div>`+
+        fallback.map((d,i)=>`
+        <div style="${i>0?'border-top:1px solid var(--b1);margin-top:12px;padding-top:12px':''}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:18px">${d.icon}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--acc)">${escapeHTML(d.name)}</span>
+          </div>
+          <div class="ai-result-arabic">${escapeHTML(d.arabic)}</div>
+          <div class="ai-result-text">${escapeHTML(d.uz)}</div>
+          <div style="font-size:11px;color:var(--gold);margin-top:4px">— ${escapeHTML(d.src)}</div>
+        </div>`).join('');
+    } else {
+      res.innerHTML=`<div style="text-align:center;padding:12px 0"><div style="font-size:28px;margin-bottom:8px">🤔</div><div style="font-size:13px;color:var(--t2)">Duo topilmadi. Pastdagi "Duo'lar" bo'limidan qidiring</div></div>`;
+    }
+    return;
+  }
+  if(lbl)lbl.textContent=`📚 Mahalliy baza · ${duolar.length} ta topildi`;
+  res.innerHTML=duolar.map((d,i)=>`
+    <div style="${i>0?'border-top:1px solid var(--b1);margin-top:12px;padding-top:12px':''}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:18px">${d.icon}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--acc)">${escapeHTML(d.name)}</span>
+        <span style="font-size:10px;background:var(--s2);padding:2px 8px;border-radius:20px;color:var(--t3)">${escapeHTML(d.cat)}</span>
+      </div>
+      <div class="ai-result-arabic">${escapeHTML(d.arabic)}</div>
+      <div class="ai-result-text">${escapeHTML(d.uz)}</div>
+      <div style="font-size:11px;color:var(--gold);margin-top:4px">— ${escapeHTML(d.src)}</div>
+    </div>`).join('');
+}
+
+// AI natijani chiroyli ko'rsatish
+function showAIResult(text){
+  const res=document.getElementById('aiResult');
+  const lbl=document.getElementById('aiModeLabel');
+  const lines=text.split('\n').filter(l=>l.trim());
+  let arabic='',tarjima='',manba='',izoh='';
+  lines.forEach(l=>{
+    if(l.startsWith('DUO:'))arabic=l.replace('DUO:','').trim();
+    else if(l.startsWith('TARJIMA:'))tarjima=l.replace('TARJIMA:','').trim();
+    else if(l.startsWith('MANBA:'))manba=l.replace('MANBA:','').trim();
+    else if(l.startsWith('IZOH:'))izoh=l.replace('IZOH:','').trim();
+  });
+  if(lbl)lbl.textContent='🤖 Gemini AI';
+  if(arabic){
+    res.innerHTML=`
+      <div class="ai-result-arabic">${escapeHTML(arabic)}</div>
+      <div class="ai-result-text">${escapeHTML(tarjima)}</div>
+      ${manba?`<div style="font-size:11px;color:var(--gold);margin-top:6px">— ${escapeHTML(manba)}</div>`:''}
+      ${izoh?`<div style="font-size:12px;color:var(--t3);margin-top:6px;border-top:1px solid var(--b1);padding-top:6px">💡 ${escapeHTML(izoh)}</div>`:''}`;
+  } else {
+    res.innerHTML=`<div class="ai-result-text">${escapeHTML(text)}</div>`;
+  }
+}
+
+async function askAI(){
+  const input=document.getElementById('aiInput').value.trim();
+  if(!input){showToast('⚠ Holatni yozing');return;}
+  const res=document.getElementById('aiResult');
+  const lbl=document.getElementById('aiModeLabel');
+  const btn=document.getElementById('aiSearchBtn');
+  if(btn){btn.disabled=true;btn.textContent='⏳';}
+  // Keshdan tekshirish
+  if(aiCache[input]){
+    showAIResult(aiCache[input]);
+    if(lbl)lbl.textContent='🤖 Gemini AI (keshdan)';
+    if(btn){btn.disabled=false;btn.textContent='Topish';}
+    return;
+  }
+  res.innerHTML=`<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:6px">Qidirilmoqda...</span></div>`;
+  if(lbl)lbl.textContent='';
+  const key=ST.settings.geminiKey;
+  // API key yo'q — mahalliy qidiruv
+  if(!key){
+    setTimeout(()=>{
+      const local=localDuoSearch(input);
+      showLocalResult(local,input);
+      if(btn){btn.disabled=false;btn.textContent='Topish';}
+    },400);
+    return;
+  }
+  // API bilan urinish
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),12000);
+  try{
+    const prompt=`Sen islomiy bilimlar bo'yicha mutaxassissan. Foydalanuvchi: "${input}".
+Mos islomiy duo tavsiya qil. FAQAT quyidagi formatda javob ber:
+DUO: [arabcha matn]
+TARJIMA: [o'zbekcha tarjima]
+MANBA: [Hadis/Qur'on]
+IZOH: [1 jumla izoh]`;
+    // gemini-2.0-flash-lite — ko'proq bepul limit
+    const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${key}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400,temperature:0.3}}),
+      signal:controller.signal
+    });
+    clearTimeout(timeoutId);
+    const data=await response.json();
+    // Quota xatoligi — mahalliy qidiruvga o'tish
+    if(data.error){
+      const errMsg=data.error.message||'';
+      const isQuota=errMsg.includes('quota')||errMsg.includes('RESOURCE_EXHAUSTED')||errMsg.includes('exceeded');
+      const isInvalid=errMsg.includes('API_KEY_INVALID')||errMsg.includes('invalid');
+      if(isQuota){
+        // Kvota tugagan — mahalliy qidiruv
+        const local=localDuoSearch(input);
+        showLocalResult(local,input);
+        if(lbl)lbl.textContent='📚 Mahalliy baza (AI kvotasi tugagan)';
+        showToast('⚠ AI kvotasi tugagan — mahalliy bazadan topildi');
+      } else if(isInvalid){
+        const local=localDuoSearch(input);
+        showLocalResult(local,input);
+        if(lbl)lbl.textContent='📚 Mahalliy baza (kalit noto\'g\'ri)';
+        showToast('⚠ API kalit noto\'g\'ri — mahalliy bazadan topildi');
+      } else {
+        const local=localDuoSearch(input);
+        showLocalResult(local,input);
+        if(lbl)lbl.textContent='📚 Mahalliy baza (AI xatoligi)';
+      }
+      if(btn){btn.disabled=false;btn.textContent='Topish';}
+      return;
+    }
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    if(text){
+      aiCache[input]=text; // Keshga saqlash
+      showAIResult(text);
+    } else {
+      showLocalResult(localDuoSearch(input),input);
+    }
+  }catch(e){
+    clearTimeout(timeoutId);
+    // Har qanday xatoda mahalliy qidiruvga o'tish
+    const local=localDuoSearch(input);
+    showLocalResult(local,input);
+    if(e.name==='AbortError'){
+      if(lbl)lbl.textContent='📚 Mahalliy baza (internet yo\'q)';
+      showToast('⚠ Internet yo\'q — mahalliy bazadan topildi');
+    } else {
+      if(lbl)lbl.textContent='📚 Mahalliy baza (ulanish xatosi)';
+    }
+  }
+  if(btn){btn.disabled=false;btn.textContent='Topish';}
+}
+
+
+
+// ============================================================
+// QIBLA - iOS webkitCompassHeading FIX
+// ============================================================
+async function renderVaqt(){
+  await loadPrayerTimes(todayKey());
+  const city=currentCity();
+  document.getElementById('vaqtCity').textContent=city.label;
+  qiblaBearing=calcQiblaBearing(city.lat,city.lon);
+  document.getElementById('qiblaPlace').textContent=`${city.label}dan Makkaga ~${qiblaBearing}°`;
+  document.getElementById('qiblaDeg').textContent=`${qiblaBearing}° — Qibla yo'nalishi`;
+  renderRamazonTimes();
+  const now=new Date();const cur=`${z2(now.getHours())}:${z2(now.getMinutes())}`;
+  const list=document.getElementById('vaqtList');list.innerHTML='';
+  let curPrayer=null;
+  const rows=VISIBLE_NAMOZLAR();
+  for(let i=rows.length-1;i>=0;i--){if(rows[i].time<=cur){curPrayer=rows[i].key;break;}}
+  rows.forEach(n=>{
+    const isCur=n.key===curPrayer;
+    const row=document.createElement('div');row.className='vaqt-row'+(isCur?' current':'');
+    row.innerHTML=`<div class="vaqt-name"><span>${n.icon}</span>${n.name}${isCur?'<span class="vaqt-cur-badge">HOZIR</span>':''}</div><div class="vaqt-time-val">${n.time}</div>`;
+    list.appendChild(row);
+  });
+  // ✅ Bayramlarni ham render qilish
+  renderBayramlar();
+  enhanceAccessibility();
+}
+function renderRamazonTimes(){
+  const fajr=NAMOZLAR.find(n=>n.key==='bomdod')?.time||'04:12';
+  const maghrib=NAMOZLAR.find(n=>n.key==='shom')?.time||'20:48';
+  const sahur=document.getElementById('sahurTime'),iftor=document.getElementById('iftorTime');
+  if(sahur)sahur.textContent=addMinutesToTime(fajr,-10);
+  if(iftor)iftor.textContent=maghrib;
+}
+async function exportICS(){
+  const now=new Date();let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Namoz Pro//UZ\r\nCALSCALE:GREGORIAN\r\n';
+  for(let d=0;d<30;d++){
+    const date=new Date(now);date.setDate(date.getDate()+d);
+    const dateKey=fmt(date);
+    const dayTimes=await loadPrayerTimes(dateKey);
+    const ds=`${date.getFullYear()}${z2(date.getMonth()+1)}${z2(date.getDate())}`;
+    dayTimes.filter(n=>FARZ_KEYS.includes(n.key)).forEach(n=>{
+      const[h,m]=n.time.split(':');
+      ics+=`BEGIN:VEVENT\r\nDTSTART:${ds}T${h}${m}00\r\nDTEND:${ds}T${h}${m}00\r\nSUMMARY:🕌 ${n.name} vaqti\r\nBEGIN:VALARM\r\nTRIGGER:-PT5M\r\nACTION:DISPLAY\r\nDESCRIPTION:${n.name} 5 daqiqada!\r\nEND:VALARM\r\nEND:VEVENT\r\n`;
+    });
+  }
+  ics+='END:VCALENDAR';
+  await loadPrayerTimes(todayKey());
+  updateCountdown();
+  renderVaqt();
+  const blob=new Blob([ics],{type:'text/calendar'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='namoz-vaqtlari.ics';a.click();showToast('📅 Yuklab olindi!');
+}
+function startQibla(){
+  if(!window.DeviceOrientationEvent){showToast('⚠ Kompas ishlamaydi');return;}
+  updateQiblaFromLocation();
+  if(typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission().then(r=>{
+      if(r==='granted'){window.addEventListener('deviceorientation',handleOri,true);document.getElementById('qiblaBtn').textContent='✅ Yoqildi';showToast('✅ Kompas yoqildi');}
+      else showToast('⚠ Ruxsat berilmadi');
+    }).catch(()=>showToast('⚠ Xato'));
+  }else{window.addEventListener('deviceorientation',handleOri,true);document.getElementById('qiblaBtn').textContent='✅ Yoqildi';}
+}
+let qiblaBearing=245;
+function degToRad(d){return d*Math.PI/180;}
+function radToDeg(r){return r*180/Math.PI;}
+function calcQiblaBearing(lat,lon){
+  const kaabaLat=degToRad(21.422487),kaabaLon=degToRad(39.826206);
+  const pLat=degToRad(lat),pLon=degToRad(lon);
+  const dLon=kaabaLon-pLon;
+  const y=Math.sin(dLon);
+  const x=Math.cos(pLat)*Math.tan(kaabaLat)-Math.sin(pLat)*Math.cos(dLon);
+  return Math.round((radToDeg(Math.atan2(y,x))+360)%360);
+}
+function updateQiblaFromLocation(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(pos=>{
+    qiblaBearing=calcQiblaBearing(pos.coords.latitude,pos.coords.longitude);
+    document.getElementById('qiblaPlace').textContent=`Joylashuvingizdan Makkaga ~${qiblaBearing}°`;
+    document.getElementById('qiblaDeg').textContent=`${qiblaBearing}° — Qibla yo'nalishi`;
+  },()=>{}, {enableHighAccuracy:true,timeout:6000,maximumAge:600000});
+}
+function handleOri(e){
+  // ✅ FIX: iOS webkitCompassHeading to'g'ri ishlashi uchun
+  let h;
+  if(e.webkitCompassHeading!==undefined&&e.webkitCompassHeading!==null){
+    // iOS: webkitCompassHeading — shimoldan soat yo'nalishida daraja
+    h=e.webkitCompassHeading;
+  }else if(e.alpha!==null&&e.alpha!==undefined){
+    // Android: alpha — mutloq emas, lekin ishlaydi
+    h=360-e.alpha;
+  }else return;
+  // Silliqlashtirish (circular smoothing — 360/0 chegarasida to'g'ri ishlash)
+  compassHeadings.push(h);
+  if(compassHeadings.length>8)compassHeadings.shift();
+  // Circular mean (360 chegarasida xato bo'lmasligi uchun)
+  let sinSum=0,cosSum=0;
+  compassHeadings.forEach(a=>{sinSum+=Math.sin(a*Math.PI/180);cosSum+=Math.cos(a*Math.PI/180);});
+  const smooth=(Math.atan2(sinSum/compassHeadings.length,cosSum/compassHeadings.length)*180/Math.PI+360)%360;
+  document.getElementById('compassNeedle').style.transform=`translateX(-50%) translateY(-100%) rotate(${smooth}deg)`;
+  document.getElementById('qiblaArrow').style.transform=`translateX(-50%) translateY(-100%) rotate(${(qiblaBearing-smooth+360)%360}deg)`;
+  document.getElementById('qiblaDeg').textContent=`${qiblaBearing}° — Qibla yo'nalishi`;
+  // Aniqlik
+  let accText='O\'rtacha';
+  if(e.webkitCompassAccuracy!==undefined&&e.webkitCompassAccuracy>=0&&e.webkitCompassAccuracy<=15)accText='Yuqori';
+  else if(e.absolute)accText='Yuqori';
+  document.getElementById('compassAccuracy').textContent=`Aniqlik: ${accText}`;
+}
+function toggleRam(){ST.settings.ramazon=document.getElementById('ramToggle').checked;saveST();showToast(ST.settings.ramazon?'🌙 Ramazon rejimi yoqildi':'O\'chirildi');}
+
+// ============================================================
+// BILDIRISHNOMALAR (Browser Notifications)
+// ============================================================
+function notifNamozlar(){return FARZ_NAMOZLAR();}
+let notifTimers=[];
+
+function renderNotifList(){
+  const list=document.getElementById('notifList');list.innerHTML='';
+  // Master toggle
+  const masterRow=document.createElement('div');masterRow.className='notif-toggle';
+  const notifEnabled=ST.settings.notifs?.master!==false;
+  masterRow.innerHTML=`<div class="notif-info"><div class="notif-name">Barcha eslatmalar</div><div class="notif-sub">Namozdan ${ST.settings.notifLead??5} daqiqa oldin bildirishnoma</div></div>
+    <label class="toggle"><input type="checkbox" id="notifMaster" ${notifEnabled?'checked':''} onchange="toggleNotif('master',this.checked)"><span class="toggle-slider"></span></label>`;
+  masterRow.style.borderBottom='1px solid var(--b1)';
+  list.appendChild(masterRow);
+  // Har bir namoz
+  notifNamozlar().forEach(n=>{
+    const enabled=ST.settings.notifs?.[n.key]!==false&&notifEnabled;
+    const row=document.createElement('div');row.className='notif-toggle';
+    row.innerHTML=`<div class="notif-info"><div class="notif-name">${n.name} — ${n.time}</div></div>
+      <label class="toggle"><input type="checkbox" ${enabled?'checked':''} onchange="toggleNotif('${n.key}',this.checked)"><span class="toggle-slider"></span></label>`;
+    row.style.borderBottom='1px solid var(--b1)';
+    list.appendChild(row);
+  });
+}
+
+async function toggleNotif(key,val){
+  if(!ST.settings.notifs)ST.settings.notifs={};
+  if(val&&Notification.permission!=='granted'){
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){showToast('⚠ Ruxsat berilmadi');renderNotifList();return;}
+  }
+  ST.settings.notifs[key]=val;saveST();
+  scheduleNextNotif();
+  showToast(val?`🔔 Yoqildi`:`🔕 O'chirildi`);
+}
+
+async function scheduleNextNotif(){
+  if(Notification.permission!=='granted')return;
+  notifTimers.forEach(clearTimeout);notifTimers=[];
+  if(ST.settings.notifs?.master===false)return;
+  await loadPrayerTimes(todayKey());
+  const now=new Date();
+  notifNamozlar().forEach(n=>{
+    if(ST.settings.notifs?.[n.key]===false)return;
+    const[h,m]=n.time.split(':').map(Number);
+    const target=new Date();target.setHours(h,m,0,0);
+    target.setMinutes(target.getMinutes()-Number(ST.settings.notifLead??5));
+    if(target<=now)target.setDate(target.getDate()+1);
+    const delay=target-now;
+    if(delay<86400000){// faqat 24 soat ichidagilarni
+      const timer=setTimeout(()=>{
+        if(Notification.permission==='granted'&&ST.settings.notifs?.master!==false&&ST.settings.notifs?.[n.key]!==false){
+          new Notification(`🕌 ${n.name} yaqinlashdi`,{body:`${n.time} — namoz vaqtiga ${ST.settings.notifLead??5} daqiqa qoldi`,icon:'',tag:n.key});
+        }
+      },delay);
+      notifTimers.push(timer);
+    }
+  });
+}
+
+// ============================================================
+// SOZLAMALAR
+// ============================================================
+function renderSoz(){
+  const pl=document.getElementById('profileList');pl.innerHTML='';
+  ST.profiles.forEach((p,i)=>{
+    const row=document.createElement('div');row.className='settings-row';
+    row.innerHTML=`<div class="settings-icon">${escapeHTML(p.emoji)}</div><div class="settings-text"><div class="settings-name">${escapeHTML(p.name)}</div><div class="settings-sub">Profil ${i+1}</div></div>
+      <div class="profile-edit-btn" style="color:var(--acc);cursor:pointer;margin-right:8px;font-size:16px">✎</div><div class="settings-arr">›</div>`;
+    row.querySelector('.profile-edit-btn').onclick=e=>{e.stopPropagation();editProfile(p.id);};
+    row.onclick=()=>{curProfile=p.id;switchTab('namoz');renderNamoz();showToast(`👤 ${p.name} tanlandi`);};pl.appendChild(row);
+  });
+  if(ST.profiles.length<5){
+    const add=document.createElement('div');add.className='settings-row';
+    add.innerHTML=`<div class="settings-icon">➕</div><div class="settings-text"><div class="settings-name">Profil qo'shish</div></div>`;
+    add.onclick=addProfile;pl.appendChild(add);
+  }
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===ST.settings.theme));
+  // Gemini key
+  const ki=document.getElementById('geminiKeyInput');
+  if(ki)ki.value=ST.settings.geminiKey||'';
+  document.getElementById('geminiStatus').textContent=ST.settings.geminiKey?'✅ Kalit saqlangan':'Kalit kiritilmagan';
+  const fs=document.getElementById('fontSizeSelect');if(fs)fs.value=ST.settings.fontSize||'normal';
+  renderAppStatus();
+  renderPrayerSettings();
+  renderNotifList();
+  enhanceAccessibility();
+}
+function setTheme(t){ST.settings.theme=t;saveST();document.body.dataset.theme=t;document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));showToast('🎨 Tema o\'zgartirildi');}
+function saveUiSettings(){
+  ST.settings.fontSize=document.getElementById('fontSizeSelect')?.value||'normal';
+  document.body.dataset.font=ST.settings.fontSize;
+  saveST();showToast('✅ Ko\'rinish saqlandi');
+}
+function renderAppStatus(){
+  const el=document.getElementById('appStatus');if(!el)return;
+  const local=location.protocol==='file:';
+  const sw='serviceWorker'in navigator&&!local;
+  const notif='Notification'in window;
+  el.textContent=`${local?'Fayldan ochilgan':'Web host'} · ${sw?'PWA tayyor':'PWA uchun hosting kerak'} · ${notif?'Bildirishnoma bor':'Bildirishnoma yo\'q'}`;
+}
+function enhanceAccessibility(root=document){
+  root.querySelectorAll('[onclick],.tab-item,.ncard,.profile-btn,.theme-btn,.settings-row').forEach(el=>{
+    if(el.tagName==='BUTTON'||el.tagName==='INPUT'||el.tagName==='SELECT')return;
+    if(!el.hasAttribute('role'))el.setAttribute('role','button');
+    if(!el.hasAttribute('tabindex'))el.setAttribute('tabindex','0');
+    if(el.dataset.keyReady)return;
+    el.dataset.keyReady='1';
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});
+  });
+}
+function renderPrayerSettings(){
+  const citySel=document.getElementById('citySelect'),methodSel=document.getElementById('methodSelect'),lead=document.getElementById('notifLeadInput'),showNafl=document.getElementById('showNaflToggle');
+  if(citySel){
+    citySel.innerHTML=PRAYER_CITIES.map(c=>`<option value="${c.id}" ${c.id===ST.settings.city?'selected':''}>${escapeHTML(c.label)}</option>`).join('');
+  }
+  if(methodSel){
+    methodSel.innerHTML=PRAYER_METHODS.map(m=>`<option value="${m.id}" ${Number(m.id)===Number(ST.settings.method)?'selected':''}>${escapeHTML(m.label)}</option>`).join('');
+  }
+  if(lead)lead.value=ST.settings.notifLead??5;
+  if(showNafl)showNafl.checked=!!ST.settings.showNafl;
+  const grid=document.getElementById('offsetGrid');
+  if(grid){
+    grid.innerHTML=FARZ_NAMOZLAR().map(n=>`<div><div style="font-size:10px;color:var(--t3);text-align:center;margin-bottom:4px">${escapeHTML(n.name)}</div><input class="settings-number" data-offset="${n.key}" type="number" min="-30" max="30" step="1" value="${ST.settings.offsets?.[n.key]||0}" onchange="savePrayerSettings()"></div>`).join('');
+  }
+}
+function savePrayerSettings(){
+  ST.settings.city=document.getElementById('citySelect')?.value||ST.settings.city||'fergana';
+  ST.settings.method=Number(document.getElementById('methodSelect')?.value||ST.settings.method||2);
+  ST.settings.notifLead=Math.max(0,Math.min(60,Number(document.getElementById('notifLeadInput')?.value||5)));
+  ST.settings.showNafl=!!document.getElementById('showNaflToggle')?.checked;
+  document.querySelectorAll('[data-offset]').forEach(inp=>{ST.settings.offsets[inp.dataset.offset]=Math.max(-30,Math.min(30,Number(inp.value||0)));});
+  prayerTimeCache={};
+  saveST();
+  loadPrayerTimes(todayKey()).then(()=>{renderNamoz();renderVaqt();renderNotifList();scheduleNextNotif();});
+  showToast('✅ Vaqt sozlamalari saqlandi');
+}
+function editProfile(id){const p=ST.profiles.find(x=>x.id===id);openModal('Profilni tahrirlash',p.name,val=>{if(val.trim()){p.name=val.trim();saveST();renderSoz();showToast('✅ Saqlandi');}});}
+function addProfile(){const emojis=['👤','👩','👨','👦','👧'];openModal('Yangi profil ismi','',val=>{if(val.trim()){ST.profiles.push({id:'p_'+Date.now(),name:val.trim(),emoji:emojis[ST.profiles.length%emojis.length]});saveST();renderSoz();showToast('✅ Qo\'shildi');}});}
+
+function exportData(){
+  const now=new Date();const ds=`${now.getFullYear()}-${z2(now.getMonth()+1)}-${z2(now.getDate())}_${z2(now.getHours())}-${z2(now.getMinutes())}`;
+  const exportObj={_meta:{version:'v5',exportedAt:now.toISOString()},...ST};
+  const blob=new Blob([JSON.stringify(exportObj,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`namoz-zaxira-${ds}.json`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);showToast('📤 Zaxira saqlandi!');
+}
+function importData(input){
+  const file=input.files[0];if(!file)return;
+  if(!file.name.endsWith('.json')){showToast('⚠ Faqat .json fayl!');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const imported=JSON.parse(e.target.result);const{_meta,...imp}=imported;
+      // Merge data
+      if(imp.data)Object.keys(imp.data).forEach(pid=>{if(!ST.data[pid])ST.data[pid]={};Object.keys(imp.data[pid]).forEach(dk=>{ST.data[pid][dk]={...(ST.data[pid][dk]||{}),...imp.data[pid][dk]};});});
+      if(imp.quran)Object.keys(imp.quran).forEach(pid=>{if(!ST.quran[pid])ST.quran[pid]={};Object.keys(imp.quran[pid]).forEach(dk=>{ST.quran[pid][dk]=Math.max(ST.quran[pid][dk]||0,imp.quran[pid][dk]||0);});});
+      if(imp.zikr)Object.keys(imp.zikr).forEach(pid=>{if(!ST.zikr[pid])ST.zikr[pid]={};Object.keys(imp.zikr[pid]).forEach(dk=>{if(!ST.zikr[pid][dk])ST.zikr[pid][dk]={};Object.keys(imp.zikr[pid][dk]).forEach(k=>{ST.zikr[pid][dk][k]=Math.max(ST.zikr[pid][dk][k]||0,imp.zikr[pid][dk][k]||0);});});});
+      if(imp.diary)Object.keys(imp.diary).forEach(pid=>{if(!ST.diary[pid])ST.diary[pid]={};Object.assign(ST.diary[pid],imp.diary[pid]);});
+      if(imp.reja)ST.reja={...ST.reja,...imp.reja};
+      if(imp.tasbeh)Object.keys(imp.tasbeh).forEach(k=>{ST.tasbeh[k]=Math.max(ST.tasbeh[k]||0,imp.tasbeh[k]||0);});
+      if(imp.settings){ST.settings={...ST.settings,...imp.settings,offsets:{...ST.settings.offsets,...(imp.settings.offsets||{})},notifs:{...ST.settings.notifs,...(imp.settings.notifs||{})}};}
+      if(imp.profiles){const ids=ST.profiles.map(p=>p.id);imp.profiles.forEach(p=>{if(!ids.includes(p.id))ST.profiles.push(p);});}
+      saveST();renderNamoz();showToast('✅ Import muvaffaqiyatli!');input.value='';
+    }catch(err){showToast('❌ Xato: '+err.message);input.value='';}
+  };
+  reader.readAsText(file);
+}
+function clearAll(){if(confirm('Hamma ma\'lumotlar o\'chadi?\nAvval eksport qilib oling!')){localStorage.removeItem('namozpro_v5');ST=loadST();renderNamoz();showToast('🗑 Tozalandi');}}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(title,def,cb,type='text'){
+  document.getElementById('modalTitle').textContent=title;modalCb=cb;modalType=type;
+  const body=document.getElementById('modalBody');
+  if(type==='textarea')body.innerHTML=`<textarea class="modal-textarea" id="modalInput" placeholder="Yozing...">${escapeHTML(def||'')}</textarea>`;
+  else body.innerHTML=`<input class="modal-input" id="modalInput" type="text" value="${escapeHTML(def||'')}">`;
+  document.getElementById('modal').classList.add('open');setTimeout(()=>document.getElementById('modalInput')?.focus(),300);
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');modalCb=null;}
+function confirmModal(){
+  const val=document.getElementById('modalInput')?.value||'';closeModal();
+  if(modalType==='textarea'&&val.trim()){if(!ST.diary[curProfile])ST.diary[curProfile]={};ST.diary[curProfile][todayKey()]=val.trim();saveST();renderZikr();showToast('📝 Yozildi');}
+  else if(modalCb)modalCb(val);
+}
+document.getElementById('modal').onclick=e=>{if(e.target===document.getElementById('modal'))closeModal();};
+
+// ============================================================
+// TOAST & KONFETTI
+// ============================================================
+let toastT;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2000);}
+function konfetti(){
+  // ✅ FIX: Memory leak tuzatildi — DocumentFragment ishlatiladi
+  const cols=['#4f8ef7','#22c55e','#d4a843','#ef4444','#7c5cbf'];
+  const pieces=[];
+  for(let i=0;i<40;i++){
+    const k=document.createElement('div');
+    k.className='konfetti-piece';
+    const dur=1.5+Math.random()*0.8;
+    k.style.cssText=`left:${Math.random()*100}vw;top:-10px;background:${cols[i%cols.length]};animation-delay:${Math.random()*0.5}s;animation-duration:${dur}s;`;
+    document.body.appendChild(k);
+    pieces.push(k);
+    // ✅ FIX: Aniq vaqtda olib tashlash
+    setTimeout(()=>{if(k.parentNode)k.parentNode.removeChild(k);},Math.ceil((dur+0.6)*1000));
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.body.dataset.theme=ST.settings.theme||'blue';
+document.body.dataset.font=ST.settings.fontSize||'normal';
+document.getElementById('ramToggle').checked=ST.settings.ramazon||false;
+renderNamoz();
+renderDailyCard();
+renderAppStatus();
+scheduleNextNotif();
+// ✅ Pull-to-refresh
+(function(){
+  let startY=0,pulling=false;
+  const ptr=document.createElement('div');
+  ptr.className='ptr-indicator';ptr.textContent='🔄';
+  document.body.appendChild(ptr);
+  const activePage=()=>document.querySelector('.page.active');
+  document.addEventListener('touchstart',e=>{if(activePage()?.scrollTop===0)startY=e.touches[0].clientY;else startY=0;},{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!startY)return;
+    const dy=e.touches[0].clientY-startY;
+    if(dy>60&&activePage()?.scrollTop===0){pulling=true;ptr.classList.add('visible');}
+  },{passive:true});
+  document.addEventListener('touchend',()=>{
+    if(pulling){pulling=false;ptr.classList.remove('visible');renderNamoz();showToast('🔄 Yangilandi');}
+    startY=0;
+  });
+})();
+</script>
+</body>
+</html>
